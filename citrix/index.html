@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador Citrix - Inicio</title>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <style>
         * {
             margin: 0;
@@ -474,15 +475,26 @@
             <h1 class="logo">Simulador Citrix</h1>
             <p class="subtitle">Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.</p>
         </div>
-        
+        <!--******************************************************-->
         <!-- Video MP4 corregido -->
-        <div class="video-container">
+        <!--<div class="video-container">
             <video class="animated-video" autoplay loop muted playsinline>
                 <source src="./img/Talking_Man.mp4" type="video/mp4">
                 Tu navegador no soporta el elemento video.
             </video>
+        </div>-->
+        <!--******************************************************-->
+        <!--******************************************************-->
+        <div class="video-container">
+            <lottie-player 
+                src="./lotties/main_estuden.json" 
+                background="transparent" 
+                speed="1" 
+                style="width: 100%; height: 100%;"
+                loop 
+                autoplay>
+            </lottie-player>
         </div>
-        
         <button class="btn-start" id="startButton">Comenzar Curso</button>
         
         <div class="features">
