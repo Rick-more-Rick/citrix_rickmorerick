@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Citrix - Inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Formas flotantes 3D */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape-3 {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+            }
+            50% { 
+                transform: translateY(-20px) rotate(180deg); 
+            }
+        }
+
+        /* Animaciones de entrada mejoradas */
+        @keyframes slideInFromRight {
+            from { 
+                transform: translateX(100vw) rotateY(15deg);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0) rotateY(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromLeft {
+            from { 
+                transform: translateX(-100vw) rotateY(-15deg);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0) rotateY(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutToLeft {
+            from { 
+                transform: translateX(0) rotateY(0deg);
+                opacity: 1;
+            }
+            to { 
+                transform: translateX(-100vw) rotateY(-15deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideOutToRight {
+            from { 
+                transform: translateX(0) rotateY(0deg);
+                opacity: 1;
+            }
+            to { 
+                transform: translateX(100vw) rotateY(15deg);
+                opacity: 0;
+            }
+        }
+
+        .page-enter-right {
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        .page-enter-left {
+            animation: slideInFromLeft 0.8s ease-out forwards;
+        }
+
+        .page-exit-left {
+            animation: slideOutToLeft 0.8s ease-in forwards;
+        }
+
+        .page-exit-right {
+            animation: slideOutToRight 0.8s ease-in forwards;
+        }
+
+        /* Contenedor principal con efecto 3D */
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px 40px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            margin: 20px 0;
+            transform-style: preserve-3d;
+        }
+
+        .logo-container {
+            margin-bottom: 40px;
+            transform: translateZ(20px);
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 50%, #ffd166 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s ease-in-out infinite;
+            transform: translateZ(25px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: translateZ(25px) scale(1);
+                text-shadow: 0 0 20px rgba(255, 126, 95, 0.3);
+            }
+            50% { 
+                transform: translateZ(30px) scale(1.05);
+                text-shadow: 0 0 30px rgba(255, 126, 95, 0.5);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            transform: translateZ(15px);
+        }
+
+        /* Contenedor de video - Reemplaza Lottie */
+        .video-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateZ(10px);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .video-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 126, 95, 0.1), rgba(254, 180, 123, 0.1));
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .video-container:hover {
+            transform: translateZ(20px) scale(1.02);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .video-container:hover::before {
+            opacity: 1;
+        }
+
+        .animated-video {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            border: none;
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 10px 30px rgba(255, 126, 95, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+            transform-style: preserve-3d;
+            margin-bottom: 10px;
+        }
+
+        .btn-start::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-start:hover::before {
+            left: 100%;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-5px) translateZ(15px);
+            box-shadow: 
+                0 15px 35px rgba(255, 126, 95, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #ff8a6b, #ffbc8c);
+        }
+
+        .btn-start:active {
+            transform: translateY(0) translateZ(10px);
+        }
+
+        .btn-start::after {
+            content: '→';
+            margin-left: 10px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-start:hover::after {
+            transform: translateX(5px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 60px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px 25px;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature:hover {
+            transform: translateY(-8px) translateZ(15px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .feature i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transform: translateZ(10px);
+        }
+
+        .feature h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: translateZ(8px);
+        }
+
+        .feature p {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.5;
+            transform: translateZ(5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 40px 25px;
+                margin: 10px 0;
+                border-radius: 20px;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 30px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                margin-top: 40px;
+                gap: 20px;
+            }
+            
+            .feature {
+                padding: 25px 20px;
+            }
+            
+            .btn-start {
+                padding: 18px 40px;
+                font-size: 1.2rem;
+            }
+            
+            .shape {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .feature {
+                padding: 20px 15px;
+            }
+            
+            .feature i {
+                font-size: 2.5rem;
+                padding: 12px;
+            }
+            
+            .feature h3 {
+                font-size: 1.2rem;
+            }
+            
+            .btn-start {
+                padding: 16px 35px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="container page-enter-right">
+        <div class="logo-container">
+            <h1 class="logo">Simulador Citrix</h1>
+            <p class="subtitle">Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.</p>
+        </div>
+        
+        <!-- Video MP4 corregido -->
+        <div class="video-container">
+            <video class="animated-video" autoplay loop muted playsinline>
+                <source src="./img/Talking_Man.mp4" type="video/mp4">
+                Tu navegador no soporta el elemento video.
+            </video>
+        </div>
+        
+        <button class="btn-start" id="startButton">Comenzar Curso</button>
+        
+        <div class="features">
+            <div class="feature">
+                <i>📚</i>
+                <h3>Contenido Completo</h3>
+                <p>Todos los módulos necesarios para dominar Citrix desde cero hasta nivel avanzado</p>
+            </div>
+            <div class="feature">
+                <i>🔄</i>
+                <h3>Simulaciones Interactivas</h3>
+                <p>Practica en un entorno seguro y realista con escenarios prácticos</p>
+            </div>
+            <div class="feature">
+                <i>🏆</i>
+                <h3>Certificación</h3>
+                <p>Obtén tu certificado oficial al completar exitosamente el curso</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para transición con efecto de ventana deslizante
+        function transitionWithSlide(direction, targetUrl) {
+            const container = document.querySelector('.container');
+            
+            // Aplicar animación de salida
+            if (direction === 'next') {
+                container.classList.remove('page-enter-right');
+                container.classList.add('page-exit-left');
+            } else {
+                container.classList.remove('page-enter-left');
+                container.classList.add('page-exit-right');
+            }
+            
+            // Prevenir múltiples clics durante la transición
+            document.getElementById('startButton').style.pointerEvents = 'none';
+            
+            // Redirigir después de la animación
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 800);
+        }
+
+        document.getElementById('startButton').addEventListener('click', function() {
+            // Efecto de clic adicional
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 200);
+            
+            // Transición a la siguiente página
+            transitionWithSlide('next', 'page_1.html');
+        });
+
+        // Solucionar errores de extensiones de Chrome
+        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+            chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+                return true;
+            });
+        }
+    </script>
+</body>
+</html>
