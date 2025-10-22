@@ -9,12 +9,16 @@ def generate_better_audio():
     
     # Textos optimizados para mejor pronunciación
     audio_texts = {
-        'welcome': 'Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.',
-        'feature_contenido': 'Contenido Completo',
-        'feature_simulaciones': 'Simulaciones Interactivas', 
-        'feature_certificacion': 'Certificación',
-        'boton_curso': 'Comenzar Curso',
-        'confirmacion': 'Iniciando curso Citrix'
+        #'welcome': 'Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.',
+        #'feature_contenido': 'Contenido Completo',
+        #'feature_simulaciones': 'Simulaciones Interactivas', 
+        #'feature_certificacion': 'Certificación',
+        #'boton_curso': 'Comenzar Curso',
+        #'confirmacion': 'Iniciando curso Citrix'
+        #******************************************************************#
+        'page1_bienvenida': 'Plataforma de Acceso Seguro. Citrix es una plataforma que proporciona a los asesores del Contact Center, un Acceso Seguro y Unificado a aplicaciones, escritorios, y datos desde su PC en su posición de trabajo. Herramientas Centralizadas. Los asesores accederán a las herramientas necesarias, para realizar sus tareas desde su lugar de trabajo, garantizando seguridad, eficiencia y productividad en todas sus operaciones.',
+        'boton_siguiente': 'Siguiente',
+        'boton_atras': 'Atras'
     }
     
     print("🎵 Generando audios con voz mejorada...")
