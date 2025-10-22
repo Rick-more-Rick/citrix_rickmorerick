@@ -554,7 +554,6 @@
     <!--*********************************************************************-->
     <!--*********************************************************************-->
     <script>
-        //
         class AudioManager {
             constructor() {
                 this.synth = window.speechSynthesis;
@@ -563,66 +562,94 @@
                 this.audioIndicator = document.getElementById('audioIndicator');
                 this.startButton = document.getElementById('startButton');
                 this.lastPlayedTime = 0;
-                this.minPlayInterval = 400;
-                this.audioEnabled = false; // Control manual del audio
+                this.minPlayInterval = 600;
+                this.audioEnabled = false;
+                this.pendingAudio = null;
+                this.activationAttempted = false;
                 
                 if (!this.synth) {
                     console.warn('SpeechSynthesis no está soportado en este navegador');
                     this.enableStartButton();
-                } else {
-                    // Habilitar audio después de interacción
-                    this.setupAudioActivation();
+                    return;
                 }
+
+                // Configurar inmediatamente los event listeners de interacción
+                this.setupUserInteraction();
             }
 
-            setupAudioActivation() {
-                // Activar audio con cualquier interacción
+            setupUserInteraction() {
+                // Función para activar audio
                 const activateAudio = () => {
-                    if (!this.audioEnabled) {
+                    if (!this.audioEnabled && !this.activationAttempted) {
+                        this.activationAttempted = true;
                         this.audioEnabled = true;
                         console.log('Audio activado por interacción del usuario');
-                        // Reproducir audio de bienvenida inmediatamente
-                        setTimeout(() => this.playWelcomeAudio(), 100);
                         
-                        // Remover event listeners
-                        ['click', 'touchstart', 'keydown'].forEach(event => {
-                            document.removeEventListener(event, activateAudio);
-                        });
+                        // Reproducir audio de bienvenida
+                        setTimeout(() => {
+                            this.playWelcomeAudio();
+                        }, 500);
+                        
+                        // Remover todos los event listeners
+                        this.removeActivationListeners();
                     }
                 };
 
-                // Agregar event listeners para activar audio
-                ['click', 'touchstart', 'keydown'].forEach(event => {
-                    document.addEventListener(event, activateAudio, { once: true });
+                // Guardar referencia a la función para poder removerla
+                this.activationHandler = activateAudio;
+
+                // Agregar event listeners más amplios
+                const events = ['click', 'mousedown', 'touchstart', 'keydown', 'scroll', 'mousemove'];
+                events.forEach(event => {
+                    document.addEventListener(event, this.activationHandler, { 
+                        passive: true,
+                        once: false // No usar once para capturar múltiples intentos
+                    });
                 });
 
-                // Activar audio automáticamente después de 1 segundo (fallback)
+                // Intentar activación automática después de tiempo
                 setTimeout(() => {
-                    if (!this.audioEnabled) {
+                    if (!this.audioEnabled && !this.activationAttempted) {
+                        console.log('Intentando activación automática de audio');
+                        this.activationAttempted = true;
                         this.audioEnabled = true;
-                        console.log('Audio activado automáticamente');
                         this.playWelcomeAudio();
                     }
-                }, 1000);
+                }, 3000);
+            }
+
+            removeActivationListeners() {
+                if (this.activationHandler) {
+                    const events = ['click', 'mousedown', 'touchstart', 'keydown', 'scroll', 'mousemove'];
+                    events.forEach(event => {
+                        document.removeEventListener(event, this.activationHandler);
+                    });
+                }
             }
 
             playWelcomeAudio() {
+                if (!this.audioEnabled) return;
+                
                 const welcomeText = "Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.";
                 
+                console.log('Reproduciendo audio de bienvenida');
                 this.speak(welcomeText, () => {
+                    console.log('Audio de bienvenida completado, habilitando botón');
                     this.enableStartButton();
                 }, true);
             }
 
             speak(text, onEnd = null, priority = false) {
-                // Verificar si el audio está habilitado
-                if (!this.audioEnabled && !priority) {
+                // Verificar si el audio está habilitado y el synth está disponible
+                if (!this.audioEnabled || !this.synth) {
+                    if (priority && onEnd) onEnd();
                     return;
                 }
 
-                // Si hay audio reproduciéndose, detenerlo inmediatamente para features
+                // Si hay audio reproduciéndose y no es prioritario, usar cola
                 if (this.isPlaying && !priority) {
-                    this.stop();
+                    this.pendingAudio = { text, onEnd };
+                    return;
                 }
 
                 // Evitar spam de audio
@@ -632,13 +659,18 @@
                 }
 
                 try {
+                    // Cancelar utterance anterior de manera segura
+                    if (this.synth.speaking) {
+                        this.synth.cancel();
+                    }
+
                     this.currentUtterance = new SpeechSynthesisUtterance(text);
                     
-                    // Configurar propiedades optimizadas
+                    // Configurar propiedades
                     this.currentUtterance.lang = 'es-ES';
-                    this.currentUtterance.rate = 1.4;
+                    this.currentUtterance.rate = 1.2; // Velocidad óptima
                     this.currentUtterance.pitch = 1.0;
-                    this.currentUtterance.volume = 0.9;
+                    this.currentUtterance.volume = 1.0;
 
                     // Mostrar indicador de audio
                     this.showAudioIndicator();
@@ -651,29 +683,45 @@
                     this.currentUtterance.onend = () => {
                         this.isPlaying = false;
                         this.hideAudioIndicator();
+                        
+                        // Procesar audio pendiente
+                        if (this.pendingAudio) {
+                            setTimeout(() => {
+                                const pending = this.pendingAudio;
+                                this.pendingAudio = null;
+                                this.speak(pending.text, pending.onEnd);
+                            }, 400);
+                        }
+                        
                         if (onEnd) onEnd();
                     };
 
                     this.currentUtterance.onerror = (event) => {
-                        console.warn('Error en síntesis de voz:', event.error);
+                        // No mostrar errores comunes como "interrupted"
+                        if (event.error !== 'interrupted') {
+                            console.log('Evento de error de audio:', event.error);
+                        }
+                        
                         this.isPlaying = false;
                         this.hideAudioIndicator();
-                        // Habilitar botón incluso si hay error
-                        if (text.includes("Simulador Citrix")) {
-                            this.enableStartButton();
+                        
+                        // Para audio de bienvenida, habilitar botón incluso con error
+                        if (text.includes("Simulador Citrix") && onEnd) {
+                            onEnd();
+                        } else if (onEnd) {
+                            onEnd();
                         }
-                        if (onEnd) onEnd();
                     };
 
-                    // Limpiar cualquier utterance pendiente
-                    if (this.synth.speaking) {
-                        this.synth.cancel();
-                    }
-                    
-                    this.synth.speak(this.currentUtterance);
+                    // Reproducir con pequeño delay para estabilidad
+                    setTimeout(() => {
+                        if (this.synth) {
+                            this.synth.speak(this.currentUtterance);
+                        }
+                    }, 100);
 
                 } catch (error) {
-                    console.error('Error al crear utterance:', error);
+                    console.log('Excepción en síntesis de voz:', error);
                     this.isPlaying = false;
                     this.hideAudioIndicator();
                     if (onEnd) onEnd();
@@ -685,6 +733,7 @@
                     this.synth.cancel();
                     this.isPlaying = false;
                     this.hideAudioIndicator();
+                    this.pendingAudio = null;
                 }
             }
 
@@ -704,127 +753,121 @@
                 if (this.startButton) {
                     this.startButton.disabled = false;
                     this.startButton.innerHTML = 'Comenzar Curso →';
-                    
-                    // Configurar audio para el botón (solo en hover)
-                    this.setupButtonAudio();
                 }
-            }
-
-            setupButtonAudio() {
-                const startButton = document.getElementById('startButton');
-                let buttonHoverTimer = null;
-
-                startButton.addEventListener('mouseenter', () => {
-                    buttonHoverTimer = setTimeout(() => {
-                        if (!this.isPlaying) {
-                            this.speak("Comenzar Curso");
-                        }
-                    }, 300);
-                });
-
-                startButton.addEventListener('mouseleave', () => {
-                    if (buttonHoverTimer) {
-                        clearTimeout(buttonHoverTimer);
-                    }
-                });
             }
         }
 
         // Inicializar el administrador de audio
         const audioManager = new AudioManager();
 
-        // Función optimizada para audios de features - SOLO TÍTULOS
+        // Función para audios de features
         function setupFeatureAudios() {
             const features = document.querySelectorAll('.feature');
-            let hoverTimer = null;
+            let hoverTimers = new Map();
             
             features.forEach(feature => {
-                // Obtener solo el título del feature
                 const title = feature.querySelector('h3').textContent;
                 
                 feature.addEventListener('mouseenter', () => {
-                    // Cancelar timer anterior si existe
-                    if (hoverTimer) {
-                        clearTimeout(hoverTimer);
+                    if (hoverTimers.has(feature)) {
+                        clearTimeout(hoverTimers.get(feature));
                     }
                     
-                    // Timer rápido para respuesta inmediata
-                    hoverTimer = setTimeout(() => {
-                        // Reproducir solo el título
+                    const timer = setTimeout(() => {
                         audioManager.speak(title);
-                    }, 200);
+                    }, 600);
+                    
+                    hoverTimers.set(feature, timer);
                 });
                 
                 feature.addEventListener('mouseleave', () => {
-                    // Cancelar timer si el mouse sale
-                    if (hoverTimer) {
-                        clearTimeout(hoverTimer);
-                        hoverTimer = null;
+                    if (hoverTimers.has(feature)) {
+                        clearTimeout(hoverTimers.get(feature));
+                        hoverTimers.delete(feature);
                     }
-                    // NOTA: No detenemos el audio al salir
                 });
 
-                // Click para dispositivos táctiles
                 feature.addEventListener('click', () => {
                     audioManager.speak(title);
                 });
             });
         }
 
-        // Función optimizada para transiciones
+        // Configurar audio para el botón
+        function setupButtonAudio() {
+            const startButton = document.getElementById('startButton');
+            if (!startButton) return;
+            
+            let buttonHoverTimer = null;
+
+            startButton.addEventListener('mouseenter', () => {
+                buttonHoverTimer = setTimeout(() => {
+                    if (!startButton.disabled) {
+                        audioManager.speak("Comenzar Curso");
+                    }
+                }, 800);
+            });
+
+            startButton.addEventListener('mouseleave', () => {
+                if (buttonHoverTimer) {
+                    clearTimeout(buttonHoverTimer);
+                }
+            });
+        }
+
+        // Función para transiciones
         function transitionWithSlide(direction, targetUrl) {
             const container = document.querySelector('.container');
             
-            // Detener cualquier audio en reproducción
             audioManager.stop();
             
-            // Aplicar animación de salida
             const exitClass = direction === 'next' ? 'page-exit-left' : 'page-exit-right';
             
             container.classList.remove('page-enter-right', 'page-enter-left');
             container.classList.add(exitClass);
             
-            // Prevenir múltiples clics
             const startButton = document.getElementById('startButton');
             if (startButton) {
                 startButton.style.pointerEvents = 'none';
             }
             
-            // Redirigir después de la animación
             setTimeout(() => {
                 window.location.href = targetUrl;
-            }, 500);
+            }, 600);
         }
 
-        // Event Listeners
+        // Inicialización principal
         document.addEventListener('DOMContentLoaded', function() {
-            // Configurar el botón de comenzar
+            console.log('Página cargada, inicializando componentes...');
+            
+            // Configurar botón de comenzar
             const startButton = document.getElementById('startButton');
             if (startButton) {
                 startButton.addEventListener('click', function() {
                     if (this.disabled) return;
                     
-                    // Efecto de clic
                     this.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         this.style.transform = '';
-                    }, 100);
+                    }, 150);
                     
-                    // Audio de confirmación (solo si está habilitado)
                     audioManager.speak("Iniciando curso", null, true);
                     
-                    // Transición
                     setTimeout(() => {
                         transitionWithSlide('next', 'page_1.html');
-                    }, 400);
+                    }, 1000);
                 });
             }
 
-            // Configurar audios de features inmediatamente
-            setupFeatureAudios();
+            // Configurar audios de features después de un delay
+            setTimeout(() => {
+                setupFeatureAudios();
+                setupButtonAudio();
+                console.log('Audios de features configurados');
+            }, 1000);
         });
 
-        // Control para pausar audio con espacio
+        // Control para pausar audio
         document.addEventListener('keydown', function(event) {
             if (event.code === 'Space') {
                 event.preventDefault();
@@ -832,7 +875,7 @@
             }
         });
 
-        // Precarga ligera de la siguiente página
+        // Precarga de siguiente página
         function preloadNextPage() {
             if (typeof window.requestIdleCallback !== 'undefined') {
                 window.requestIdleCallback(() => {
@@ -842,33 +885,34 @@
                         link.href = 'page_1.html';
                         document.head.appendChild(link);
                     } catch (error) {
-                        console.log('Precarga no disponible');
+                        // Silenciar error
                     }
                 });
             }
         }
 
-        // Precargar cuando el usuario interactúe
-        document.addEventListener('mousemove', preloadNextPage, { once: true });
+        // Precargar en interacción
+        setTimeout(preloadNextPage, 2000);
 
-        // Mejorar comportamiento en móviles
+        // Detectar dispositivos táctiles
         if ('ontouchstart' in window) {
             document.documentElement.classList.add('touch-device');
         }
 
-        // Solucionar errores de extensiones de Chrome
+        // Manejo silencioso de extensiones
         if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
             try {
                 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-                    if (sendResponse) {
-                        sendResponse({received: true});
-                    }
+                    if (sendResponse) sendResponse({received: true});
                     return false;
                 });
             } catch (error) {
-                // Silenciar error de extensión
+                // Ignorar errores de extensiones
             }
         }
+
+        // Mensaje inicial
+        console.log('Simulador Citrix - Sistema de audio inicializado');
     </script>
 </body>
 </html>
