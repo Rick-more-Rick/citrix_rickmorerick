@@ -550,8 +550,9 @@
             </div>
         </div>
     </div>
-
+    <!---->
     <script>
+        //
         class AudioManager {
             //
             constructor() {
@@ -561,7 +562,11 @@
                 this.audioIndicator = document.getElementById('audioIndicator');
                 this.startButton = document.getElementById('startButton');
                 this.lastPlayedTime = 0;
-                this.minPlayInterval = 500; // Reducido a 500ms entre audios
+                this.minPlayInterval = 400;
+                this.userInteracted = false;
+                
+                // Configurar event listeners para interacción del usuario
+                this.setupUserInteraction();
                 
                 if (!this.synth) {
                     console.warn('SpeechSynthesis no está soportado en este navegador');
@@ -569,52 +574,94 @@
                 }
             }
 
+            setupUserInteraction() {
+                // Los navegadores requieren interacción del usuario para reproducir audio
+                const interactionEvents = ['click', 'touchstart', 'keydown', 'mousedown'];
+                
+                interactionEvents.forEach(eventType => {
+                    document.addEventListener(eventType, () => {
+                        this.userInteracted = true;
+                    }, { once: true });
+                });
+            }
+
             speak(text, onEnd = null, priority = false) {
+                // Verificar si el usuario ha interactuado primero
+                if (!this.userInteracted && !priority) {
+                    console.log('Esperando interacción del usuario...');
+                    return;
+                }
+
                 // Si hay audio reproduciéndose, detenerlo inmediatamente para features
                 if (this.isPlaying && !priority) {
                     this.stop();
                 }
 
-                // Evitar spam de audio (solo para no prioritarios)
+                // Evitar spam de audio
                 const now = Date.now();
                 if (!priority && now - this.lastPlayedTime < this.minPlayInterval) {
                     return;
                 }
 
-                this.currentUtterance = new SpeechSynthesisUtterance(text);
-                
-                // Configurar propiedades optimizadas - VELOCIDAD AUMENTADA
-                this.currentUtterance.lang = 'es-ES';
-                this.currentUtterance.rate = 1.3; // Aumentado de 1.0 a 1.3 (más rápido)
-                this.currentUtterance.pitch = 1.1; // Pitch ligeramente más alto para mejor claridad
-                this.currentUtterance.volume = 1.0;
+                // Verificar si el synth está disponible
+                if (!this.synth) {
+                    console.warn('SpeechSynthesis no disponible');
+                    if (onEnd) onEnd();
+                    return;
+                }
 
-                // Mostrar indicador de audio
-                this.showAudioIndicator();
+                try {
+                    this.currentUtterance = new SpeechSynthesisUtterance(text);
+                    
+                    // Configurar propiedades optimizadas - MÁS RÁPIDO
+                    this.currentUtterance.lang = 'es-ES';
+                    this.currentUtterance.rate = 1.4; // Más rápido que 1.3
+                    this.currentUtterance.pitch = 1.0;
+                    this.currentUtterance.volume = 0.9;
 
-                this.currentUtterance.onstart = () => {
-                    this.isPlaying = true;
-                    this.lastPlayedTime = Date.now();
-                };
+                    // Mostrar indicador de audio
+                    this.showAudioIndicator();
 
-                this.currentUtterance.onend = () => {
+                    this.currentUtterance.onstart = () => {
+                        this.isPlaying = true;
+                        this.lastPlayedTime = Date.now();
+                    };
+
+                    this.currentUtterance.onend = () => {
+                        this.isPlaying = false;
+                        this.hideAudioIndicator();
+                        if (onEnd) onEnd();
+                    };
+
+                    this.currentUtterance.onerror = (event) => {
+                        console.warn('Error en síntesis de voz:', event.error);
+                        this.isPlaying = false;
+                        this.hideAudioIndicator();
+                        // Habilitar botón incluso si hay error
+                        if (text.includes("Simulador Citrix")) {
+                            this.enableStartButton();
+                        }
+                        if (onEnd) onEnd();
+                    };
+
+                    // Limpiar cualquier utterance pendiente
+                    this.synth.cancel();
+                    
+                    // Pequeño delay para asegurar la reproducción
+                    setTimeout(() => {
+                        this.synth.speak(this.currentUtterance);
+                    }, 50);
+
+                } catch (error) {
+                    console.error('Error al crear utterance:', error);
                     this.isPlaying = false;
                     this.hideAudioIndicator();
                     if (onEnd) onEnd();
-                };
-
-                this.currentUtterance.onerror = (event) => {
-                    console.error('Error en síntesis de voz:', event);
-                    this.isPlaying = false;
-                    this.hideAudioIndicator();
-                    if (onEnd) onEnd();
-                };
-
-                this.synth.speak(this.currentUtterance);
+                }
             }
 
             stop() {
-                if (this.synth.speaking) {
+                if (this.synth && this.synth.speaking) {
                     this.synth.cancel();
                     this.isPlaying = false;
                     this.hideAudioIndicator();
@@ -622,16 +669,22 @@
             }
 
             showAudioIndicator() {
-                this.audioIndicator.classList.add('playing');
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.add('playing');
+                }
             }
 
             hideAudioIndicator() {
-                this.audioIndicator.classList.remove('playing');
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.remove('playing');
+                }
             }
 
             enableStartButton() {
-                this.startButton.disabled = false;
-                this.startButton.innerHTML = 'Comenzar Curso →';
+                if (this.startButton) {
+                    this.startButton.disabled = false;
+                    this.startButton.innerHTML = 'Comenzar Curso →';
+                }
             }
         }
 
@@ -642,18 +695,20 @@
         function playWelcomeAudio() {
             const welcomeText = "Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.";
             
-            // Audio prioritario (se reproduce incluso si hay otros)
-            audioManager.speak(welcomeText, () => {
-                audioManager.enableStartButton();
-                
-                // Audio del botón (no prioritario)
-                setTimeout(() => {
-                    audioManager.speak("Comenzar Curso");
-                }, 200); // Reducido a 200ms
-            }, true);
+            // Usar setTimeout para dar tiempo a la interacción del usuario
+            setTimeout(() => {
+                audioManager.speak(welcomeText, () => {
+                    audioManager.enableStartButton();
+                    
+                    // Audio del botón
+                    setTimeout(() => {
+                        audioManager.speak("Comenzar Curso");
+                    }, 300);
+                }, true);
+            }, 1000);
         }
 
-        // Función SUPER optimizada para audios de features - SOLO TÍTULOS
+        // Función optimizada para audios de features - SOLO TÍTULOS
         function setupFeatureAudios() {
             const features = document.querySelectorAll('.feature');
             let hoverTimer = null;
@@ -671,15 +726,15 @@
                     
                     // Timer MUY corto para respuesta inmediata
                     hoverTimer = setTimeout(() => {
-                        // Si ya hay audio reproduciéndose de otro feature, detenerlo
-                        if (audioManager.isPlaying && currentPlayingFeature !== feature) {
+                        // Si ya hay audio reproduciéndose, detenerlo
+                        if (audioManager.isPlaying) {
                             audioManager.stop();
                         }
                         
                         // Reproducir solo el título
                         audioManager.speak(title);
                         currentPlayingFeature = feature;
-                    }, 150); // Reducido a 150ms - casi inmediato
+                    }, 100); // Reducido a 100ms
                 });
                 
                 feature.addEventListener('mouseleave', () => {
@@ -689,11 +744,8 @@
                         hoverTimer = null;
                     }
                     
-                    // Si el audio actual es de este feature, detenerlo al salir
-                    if (currentPlayingFeature === feature && audioManager.isPlaying) {
-                        audioManager.stop();
-                    }
                     currentPlayingFeature = null;
+                    // NOTA: No detenemos el audio al salir para que complete la reproducción
                 });
 
                 // Click para dispositivos táctiles
@@ -721,40 +773,70 @@
             container.classList.add(exitClass);
             
             // Prevenir múltiples clics
-            document.getElementById('startButton').style.pointerEvents = 'none';
+            const startButton = document.getElementById('startButton');
+            if (startButton) {
+                startButton.style.pointerEvents = 'none';
+            }
             
             // Redirigir después de la animación
             setTimeout(() => {
                 window.location.href = targetUrl;
-            }, 500); // Reducido a 500ms
+            }, 500);
         }
 
         // Event Listeners optimizados
-        document.getElementById('startButton').addEventListener('click', function() {
-            if (this.disabled) return;
-            
-            // Efecto de clic más rápido
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 100); // Reducido a 100ms
-            
-            // Audio de confirmación más corto
-            audioManager.speak("Iniciando curso", null, true);
-            
-            // Transición más rápida
-            setTimeout(() => {
-                transitionWithSlide('next', 'page_1.html');
-            }, 400); // Reducido a 400ms
-        });
-
-        // Inicialización ULTRA rápida
         document.addEventListener('DOMContentLoaded', function() {
-            // Iniciar inmediatamente sin delays
-            setTimeout(() => {
+            const startButton = document.getElementById('startButton');
+            if (startButton) {
+                startButton.addEventListener('click', function() {
+                    if (this.disabled) return;
+                    
+                    // Efecto de clic
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 100);
+                    
+                    // Audio de confirmación
+                    audioManager.speak("Iniciando curso", null, true);
+                    
+                    // Transición
+                    setTimeout(() => {
+                        transitionWithSlide('next', 'page_1.html');
+                    }, 400);
+                });
+            }
+
+            // Inicializar audios después de interacción del usuario
+            const initAudio = () => {
                 playWelcomeAudio();
                 setupFeatureAudios();
-            }, 100); // Reducido a solo 100ms
+            };
+
+            // Esperar a que el usuario interactúe o cargar después de un tiempo
+            const interactionEvents = ['click', 'touchstart', 'keydown'];
+            let audioInitialized = false;
+
+            const initializeAudioOnce = () => {
+                if (!audioInitialized) {
+                    audioInitialized = true;
+                    initAudio();
+                    // Remover event listeners después de la inicialización
+                    interactionEvents.forEach(event => {
+                        document.removeEventListener(event, initializeAudioOnce);
+                    });
+                }
+            };
+
+            // Agregar event listeners para interacción
+            interactionEvents.forEach(event => {
+                document.addEventListener(event, initializeAudioOnce, { once: true });
+            });
+
+            // Inicializar después de 2 segundos incluso sin interacción
+            setTimeout(() => {
+                initializeAudioOnce();
+            }, 2000);
         });
 
         // Control para pausar audio con espacio
@@ -765,25 +847,44 @@
             }
         });
 
-        // Mejorar comportamiento en móviles
-        if ('ontouchstart' in window) {
-            document.documentElement.classList.add('touch-device');
+        // Solucionar errores de extensiones de Chrome de manera segura
+        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+            try {
+                chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+                    // Siempre enviar respuesta para evitar el error
+                    if (sendResponse) {
+                        sendResponse({received: true});
+                    }
+                    return false;
+                });
+            } catch (error) {
+                console.log('Extensión Chrome no disponible');
+            }
         }
 
         // Precarga ligera de la siguiente página
         function preloadNextPage() {
             if (typeof window.requestIdleCallback !== 'undefined') {
                 window.requestIdleCallback(() => {
-                    const link = document.createElement('link');
-                    link.rel = 'prefetch';
-                    link.href = 'page_1.html';
-                    document.head.appendChild(link);
+                    try {
+                        const link = document.createElement('link');
+                        link.rel = 'prefetch';
+                        link.href = 'page_1.html';
+                        document.head.appendChild(link);
+                    } catch (error) {
+                        console.log('Precarga no disponible');
+                    }
                 });
             }
         }
 
         // Precargar cuando el usuario interactúe
         document.addEventListener('mousemove', preloadNextPage, { once: true });
+
+        // Mejorar comportamiento en móviles
+        if ('ontouchstart' in window) {
+            document.documentElement.classList.add('touch-device');
+        }
     </script>
 </body>
 </html>
