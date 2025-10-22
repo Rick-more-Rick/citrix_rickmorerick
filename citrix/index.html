@@ -6,6 +6,7 @@
     <title>Simulador Citrix - Inicio</title>
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <style>
+        /* Tus estilos CSS existentes se mantienen igual */
         * {
             margin: 0;
             padding: 0;
@@ -331,6 +332,7 @@
             transform-style: preserve-3d;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .feature::before {
@@ -384,6 +386,44 @@
             opacity: 0.9;
             line-height: 1.5;
             transform: translateZ(5px);
+        }
+
+        /* Estados del botón */
+        .btn-start:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-start:disabled:hover {
+            transform: none !important;
+            box-shadow: 
+                0 10px 30px rgba(255, 126, 95, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Indicador de audio */
+        .audio-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        .audio-indicator.playing {
+            display: block;
+            animation: pulse-audio 1.5s infinite;
+        }
+
+        @keyframes pulse-audio {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         /* Responsive */
@@ -464,6 +504,9 @@
     </style>
 </head>
 <body>
+    <!-- Indicador de audio -->
+    <div class="audio-indicator" id="audioIndicator">🔊 Reproduciendo audio...</div>
+
     <div class="floating-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
@@ -475,16 +518,7 @@
             <h1 class="logo">Simulador Citrix</h1>
             <p class="subtitle">Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.</p>
         </div>
-        <!--******************************************************-->
-        <!-- Video MP4 corregido -->
-        <!--<div class="video-container">
-            <video class="animated-video" autoplay loop muted playsinline>
-                <source src="./img/Talking_Man.mp4" type="video/mp4">
-                Tu navegador no soporta el elemento video.
-            </video>
-        </div>-->
-        <!--******************************************************-->
-        <!--******************************************************-->
+
         <div class="video-container">
             <lottie-player 
                 src="./lotties/main_estuden.json" 
@@ -495,20 +529,21 @@
                 autoplay>
             </lottie-player>
         </div>
-        <button class="btn-start" id="startButton">Comenzar Curso</button>
+
+        <button class="btn-start" id="startButton" disabled>Comenzar Curso</button>
         
         <div class="features">
-            <div class="feature">
+            <div class="feature" data-audio-text="Contenido Completo. Todos los módulos necesarios para dominar Citrix desde cero hasta nivel avanzado">
                 <i>📚</i>
                 <h3>Contenido Completo</h3>
                 <p>Todos los módulos necesarios para dominar Citrix desde cero hasta nivel avanzado</p>
             </div>
-            <div class="feature">
+            <div class="feature" data-audio-text="Simulaciones Interactivas. Practica en un entorno seguro y realista con escenarios prácticos">
                 <i>🔄</i>
                 <h3>Simulaciones Interactivas</h3>
                 <p>Practica en un entorno seguro y realista con escenarios prácticos</p>
             </div>
-            <div class="feature">
+            <div class="feature" data-audio-text="Certificación. Obtén tu certificado oficial al completar exitosamente el curso">
                 <i>🏆</i>
                 <h3>Certificación</h3>
                 <p>Obtén tu certificado oficial al completar exitosamente el curso</p>
@@ -517,45 +552,238 @@
     </div>
 
     <script>
-        // Función para transición con efecto de ventana deslizante
+        class AudioManager {
+            //
+            constructor() {
+                this.synth = window.speechSynthesis;
+                this.currentUtterance = null;
+                this.isPlaying = false;
+                this.audioIndicator = document.getElementById('audioIndicator');
+                this.startButton = document.getElementById('startButton');
+                this.lastPlayedTime = 0;
+                this.minPlayInterval = 500; // Reducido a 500ms entre audios
+                
+                if (!this.synth) {
+                    console.warn('SpeechSynthesis no está soportado en este navegador');
+                    this.enableStartButton();
+                }
+            }
+
+            speak(text, onEnd = null, priority = false) {
+                // Si hay audio reproduciéndose, detenerlo inmediatamente para features
+                if (this.isPlaying && !priority) {
+                    this.stop();
+                }
+
+                // Evitar spam de audio (solo para no prioritarios)
+                const now = Date.now();
+                if (!priority && now - this.lastPlayedTime < this.minPlayInterval) {
+                    return;
+                }
+
+                this.currentUtterance = new SpeechSynthesisUtterance(text);
+                
+                // Configurar propiedades optimizadas - VELOCIDAD AUMENTADA
+                this.currentUtterance.lang = 'es-ES';
+                this.currentUtterance.rate = 1.3; // Aumentado de 1.0 a 1.3 (más rápido)
+                this.currentUtterance.pitch = 1.1; // Pitch ligeramente más alto para mejor claridad
+                this.currentUtterance.volume = 1.0;
+
+                // Mostrar indicador de audio
+                this.showAudioIndicator();
+
+                this.currentUtterance.onstart = () => {
+                    this.isPlaying = true;
+                    this.lastPlayedTime = Date.now();
+                };
+
+                this.currentUtterance.onend = () => {
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                    if (onEnd) onEnd();
+                };
+
+                this.currentUtterance.onerror = (event) => {
+                    console.error('Error en síntesis de voz:', event);
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                    if (onEnd) onEnd();
+                };
+
+                this.synth.speak(this.currentUtterance);
+            }
+
+            stop() {
+                if (this.synth.speaking) {
+                    this.synth.cancel();
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                }
+            }
+
+            showAudioIndicator() {
+                this.audioIndicator.classList.add('playing');
+            }
+
+            hideAudioIndicator() {
+                this.audioIndicator.classList.remove('playing');
+            }
+
+            enableStartButton() {
+                this.startButton.disabled = false;
+                this.startButton.innerHTML = 'Comenzar Curso →';
+            }
+        }
+
+        // Inicializar el administrador de audio
+        const audioManager = new AudioManager();
+
+        // Función para reproducir audio de bienvenida
+        function playWelcomeAudio() {
+            const welcomeText = "Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.";
+            
+            // Audio prioritario (se reproduce incluso si hay otros)
+            audioManager.speak(welcomeText, () => {
+                audioManager.enableStartButton();
+                
+                // Audio del botón (no prioritario)
+                setTimeout(() => {
+                    audioManager.speak("Comenzar Curso");
+                }, 200); // Reducido a 200ms
+            }, true);
+        }
+
+        // Función SUPER optimizada para audios de features - SOLO TÍTULOS
+        function setupFeatureAudios() {
+            const features = document.querySelectorAll('.feature');
+            let hoverTimer = null;
+            let currentPlayingFeature = null;
+            
+            features.forEach(feature => {
+                // Obtener solo el título del feature
+                const title = feature.querySelector('h3').textContent;
+                
+                feature.addEventListener('mouseenter', () => {
+                    // Cancelar timer anterior si existe
+                    if (hoverTimer) {
+                        clearTimeout(hoverTimer);
+                    }
+                    
+                    // Timer MUY corto para respuesta inmediata
+                    hoverTimer = setTimeout(() => {
+                        // Si ya hay audio reproduciéndose de otro feature, detenerlo
+                        if (audioManager.isPlaying && currentPlayingFeature !== feature) {
+                            audioManager.stop();
+                        }
+                        
+                        // Reproducir solo el título
+                        audioManager.speak(title);
+                        currentPlayingFeature = feature;
+                    }, 150); // Reducido a 150ms - casi inmediato
+                });
+                
+                feature.addEventListener('mouseleave', () => {
+                    // Cancelar timer si el mouse sale
+                    if (hoverTimer) {
+                        clearTimeout(hoverTimer);
+                        hoverTimer = null;
+                    }
+                    
+                    // Si el audio actual es de este feature, detenerlo al salir
+                    if (currentPlayingFeature === feature && audioManager.isPlaying) {
+                        audioManager.stop();
+                    }
+                    currentPlayingFeature = null;
+                });
+
+                // Click para dispositivos táctiles
+                feature.addEventListener('click', () => {
+                    if (audioManager.isPlaying) {
+                        audioManager.stop();
+                    }
+                    audioManager.speak(title);
+                    currentPlayingFeature = feature;
+                });
+            });
+        }
+
+        // Función optimizada para transiciones
         function transitionWithSlide(direction, targetUrl) {
             const container = document.querySelector('.container');
             
-            // Aplicar animación de salida
-            if (direction === 'next') {
-                container.classList.remove('page-enter-right');
-                container.classList.add('page-exit-left');
-            } else {
-                container.classList.remove('page-enter-left');
-                container.classList.add('page-exit-right');
-            }
+            // Detener cualquier audio en reproducción
+            audioManager.stop();
             
-            // Prevenir múltiples clics durante la transición
+            // Aplicar animación de salida
+            const exitClass = direction === 'next' ? 'page-exit-left' : 'page-exit-right';
+            
+            container.classList.remove('page-enter-right', 'page-enter-left');
+            container.classList.add(exitClass);
+            
+            // Prevenir múltiples clics
             document.getElementById('startButton').style.pointerEvents = 'none';
             
             // Redirigir después de la animación
             setTimeout(() => {
                 window.location.href = targetUrl;
-            }, 800);
+            }, 500); // Reducido a 500ms
         }
 
+        // Event Listeners optimizados
         document.getElementById('startButton').addEventListener('click', function() {
-            // Efecto de clic adicional
+            if (this.disabled) return;
+            
+            // Efecto de clic más rápido
             this.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 this.style.transform = '';
-            }, 200);
+            }, 100); // Reducido a 100ms
             
-            // Transición a la siguiente página
-            transitionWithSlide('next', 'page_1.html');
+            // Audio de confirmación más corto
+            audioManager.speak("Iniciando curso", null, true);
+            
+            // Transición más rápida
+            setTimeout(() => {
+                transitionWithSlide('next', 'page_1.html');
+            }, 400); // Reducido a 400ms
         });
 
-        // Solucionar errores de extensiones de Chrome
-        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-            chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-                return true;
-            });
+        // Inicialización ULTRA rápida
+        document.addEventListener('DOMContentLoaded', function() {
+            // Iniciar inmediatamente sin delays
+            setTimeout(() => {
+                playWelcomeAudio();
+                setupFeatureAudios();
+            }, 100); // Reducido a solo 100ms
+        });
+
+        // Control para pausar audio con espacio
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                audioManager.stop();
+            }
+        });
+
+        // Mejorar comportamiento en móviles
+        if ('ontouchstart' in window) {
+            document.documentElement.classList.add('touch-device');
         }
+
+        // Precarga ligera de la siguiente página
+        function preloadNextPage() {
+            if (typeof window.requestIdleCallback !== 'undefined') {
+                window.requestIdleCallback(() => {
+                    const link = document.createElement('link');
+                    link.rel = 'prefetch';
+                    link.href = 'page_1.html';
+                    document.head.appendChild(link);
+                });
+            }
+        }
+
+        // Precargar cuando el usuario interactúe
+        document.addEventListener('mousemove', preloadNextPage, { once: true });
     </script>
 </body>
 </html>
