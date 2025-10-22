@@ -550,11 +550,12 @@
             </div>
         </div>
     </div>
-    <!---->
+    <!--*********************************************************************-->
+    <!--*********************************************************************-->
+    <!--*********************************************************************-->
     <script>
         //
         class AudioManager {
-            //
             constructor() {
                 this.synth = window.speechSynthesis;
                 this.currentUtterance = null;
@@ -563,32 +564,59 @@
                 this.startButton = document.getElementById('startButton');
                 this.lastPlayedTime = 0;
                 this.minPlayInterval = 400;
-                this.userInteracted = false;
-                
-                // Configurar event listeners para interacción del usuario
-                this.setupUserInteraction();
+                this.audioEnabled = false; // Control manual del audio
                 
                 if (!this.synth) {
                     console.warn('SpeechSynthesis no está soportado en este navegador');
                     this.enableStartButton();
+                } else {
+                    // Habilitar audio después de interacción
+                    this.setupAudioActivation();
                 }
             }
 
-            setupUserInteraction() {
-                // Los navegadores requieren interacción del usuario para reproducir audio
-                const interactionEvents = ['click', 'touchstart', 'keydown', 'mousedown'];
-                
-                interactionEvents.forEach(eventType => {
-                    document.addEventListener(eventType, () => {
-                        this.userInteracted = true;
-                    }, { once: true });
+            setupAudioActivation() {
+                // Activar audio con cualquier interacción
+                const activateAudio = () => {
+                    if (!this.audioEnabled) {
+                        this.audioEnabled = true;
+                        console.log('Audio activado por interacción del usuario');
+                        // Reproducir audio de bienvenida inmediatamente
+                        setTimeout(() => this.playWelcomeAudio(), 100);
+                        
+                        // Remover event listeners
+                        ['click', 'touchstart', 'keydown'].forEach(event => {
+                            document.removeEventListener(event, activateAudio);
+                        });
+                    }
+                };
+
+                // Agregar event listeners para activar audio
+                ['click', 'touchstart', 'keydown'].forEach(event => {
+                    document.addEventListener(event, activateAudio, { once: true });
                 });
+
+                // Activar audio automáticamente después de 1 segundo (fallback)
+                setTimeout(() => {
+                    if (!this.audioEnabled) {
+                        this.audioEnabled = true;
+                        console.log('Audio activado automáticamente');
+                        this.playWelcomeAudio();
+                    }
+                }, 1000);
+            }
+
+            playWelcomeAudio() {
+                const welcomeText = "Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.";
+                
+                this.speak(welcomeText, () => {
+                    this.enableStartButton();
+                }, true);
             }
 
             speak(text, onEnd = null, priority = false) {
-                // Verificar si el usuario ha interactuado primero
-                if (!this.userInteracted && !priority) {
-                    console.log('Esperando interacción del usuario...');
+                // Verificar si el audio está habilitado
+                if (!this.audioEnabled && !priority) {
                     return;
                 }
 
@@ -603,19 +631,12 @@
                     return;
                 }
 
-                // Verificar si el synth está disponible
-                if (!this.synth) {
-                    console.warn('SpeechSynthesis no disponible');
-                    if (onEnd) onEnd();
-                    return;
-                }
-
                 try {
                     this.currentUtterance = new SpeechSynthesisUtterance(text);
                     
-                    // Configurar propiedades optimizadas - MÁS RÁPIDO
+                    // Configurar propiedades optimizadas
                     this.currentUtterance.lang = 'es-ES';
-                    this.currentUtterance.rate = 1.4; // Más rápido que 1.3
+                    this.currentUtterance.rate = 1.4;
                     this.currentUtterance.pitch = 1.0;
                     this.currentUtterance.volume = 0.9;
 
@@ -645,12 +666,11 @@
                     };
 
                     // Limpiar cualquier utterance pendiente
-                    this.synth.cancel();
+                    if (this.synth.speaking) {
+                        this.synth.cancel();
+                    }
                     
-                    // Pequeño delay para asegurar la reproducción
-                    setTimeout(() => {
-                        this.synth.speak(this.currentUtterance);
-                    }, 50);
+                    this.synth.speak(this.currentUtterance);
 
                 } catch (error) {
                     console.error('Error al crear utterance:', error);
@@ -684,35 +704,39 @@
                 if (this.startButton) {
                     this.startButton.disabled = false;
                     this.startButton.innerHTML = 'Comenzar Curso →';
+                    
+                    // Configurar audio para el botón (solo en hover)
+                    this.setupButtonAudio();
                 }
+            }
+
+            setupButtonAudio() {
+                const startButton = document.getElementById('startButton');
+                let buttonHoverTimer = null;
+
+                startButton.addEventListener('mouseenter', () => {
+                    buttonHoverTimer = setTimeout(() => {
+                        if (!this.isPlaying) {
+                            this.speak("Comenzar Curso");
+                        }
+                    }, 300);
+                });
+
+                startButton.addEventListener('mouseleave', () => {
+                    if (buttonHoverTimer) {
+                        clearTimeout(buttonHoverTimer);
+                    }
+                });
             }
         }
 
         // Inicializar el administrador de audio
         const audioManager = new AudioManager();
 
-        // Función para reproducir audio de bienvenida
-        function playWelcomeAudio() {
-            const welcomeText = "Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.";
-            
-            // Usar setTimeout para dar tiempo a la interacción del usuario
-            setTimeout(() => {
-                audioManager.speak(welcomeText, () => {
-                    audioManager.enableStartButton();
-                    
-                    // Audio del botón
-                    setTimeout(() => {
-                        audioManager.speak("Comenzar Curso");
-                    }, 300);
-                }, true);
-            }, 1000);
-        }
-
         // Función optimizada para audios de features - SOLO TÍTULOS
         function setupFeatureAudios() {
             const features = document.querySelectorAll('.feature');
             let hoverTimer = null;
-            let currentPlayingFeature = null;
             
             features.forEach(feature => {
                 // Obtener solo el título del feature
@@ -724,17 +748,11 @@
                         clearTimeout(hoverTimer);
                     }
                     
-                    // Timer MUY corto para respuesta inmediata
+                    // Timer rápido para respuesta inmediata
                     hoverTimer = setTimeout(() => {
-                        // Si ya hay audio reproduciéndose, detenerlo
-                        if (audioManager.isPlaying) {
-                            audioManager.stop();
-                        }
-                        
                         // Reproducir solo el título
                         audioManager.speak(title);
-                        currentPlayingFeature = feature;
-                    }, 100); // Reducido a 100ms
+                    }, 200);
                 });
                 
                 feature.addEventListener('mouseleave', () => {
@@ -743,18 +761,12 @@
                         clearTimeout(hoverTimer);
                         hoverTimer = null;
                     }
-                    
-                    currentPlayingFeature = null;
-                    // NOTA: No detenemos el audio al salir para que complete la reproducción
+                    // NOTA: No detenemos el audio al salir
                 });
 
                 // Click para dispositivos táctiles
                 feature.addEventListener('click', () => {
-                    if (audioManager.isPlaying) {
-                        audioManager.stop();
-                    }
                     audioManager.speak(title);
-                    currentPlayingFeature = feature;
                 });
             });
         }
@@ -784,8 +796,9 @@
             }, 500);
         }
 
-        // Event Listeners optimizados
+        // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
+            // Configurar el botón de comenzar
             const startButton = document.getElementById('startButton');
             if (startButton) {
                 startButton.addEventListener('click', function() {
@@ -797,7 +810,7 @@
                         this.style.transform = '';
                     }, 100);
                     
-                    // Audio de confirmación
+                    // Audio de confirmación (solo si está habilitado)
                     audioManager.speak("Iniciando curso", null, true);
                     
                     // Transición
@@ -807,36 +820,8 @@
                 });
             }
 
-            // Inicializar audios después de interacción del usuario
-            const initAudio = () => {
-                playWelcomeAudio();
-                setupFeatureAudios();
-            };
-
-            // Esperar a que el usuario interactúe o cargar después de un tiempo
-            const interactionEvents = ['click', 'touchstart', 'keydown'];
-            let audioInitialized = false;
-
-            const initializeAudioOnce = () => {
-                if (!audioInitialized) {
-                    audioInitialized = true;
-                    initAudio();
-                    // Remover event listeners después de la inicialización
-                    interactionEvents.forEach(event => {
-                        document.removeEventListener(event, initializeAudioOnce);
-                    });
-                }
-            };
-
-            // Agregar event listeners para interacción
-            interactionEvents.forEach(event => {
-                document.addEventListener(event, initializeAudioOnce, { once: true });
-            });
-
-            // Inicializar después de 2 segundos incluso sin interacción
-            setTimeout(() => {
-                initializeAudioOnce();
-            }, 2000);
+            // Configurar audios de features inmediatamente
+            setupFeatureAudios();
         });
 
         // Control para pausar audio con espacio
@@ -846,21 +831,6 @@
                 audioManager.stop();
             }
         });
-
-        // Solucionar errores de extensiones de Chrome de manera segura
-        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-            try {
-                chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-                    // Siempre enviar respuesta para evitar el error
-                    if (sendResponse) {
-                        sendResponse({received: true});
-                    }
-                    return false;
-                });
-            } catch (error) {
-                console.log('Extensión Chrome no disponible');
-            }
-        }
 
         // Precarga ligera de la siguiente página
         function preloadNextPage() {
@@ -884,6 +854,20 @@
         // Mejorar comportamiento en móviles
         if ('ontouchstart' in window) {
             document.documentElement.classList.add('touch-device');
+        }
+
+        // Solucionar errores de extensiones de Chrome
+        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+            try {
+                chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+                    if (sendResponse) {
+                        sendResponse({received: true});
+                    }
+                    return false;
+                });
+            } catch (error) {
+                // Silenciar error de extensión
+            }
         }
     </script>
 </body>
