@@ -38,6 +38,77 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* NUEVOS ESTILOS PARA SISTEMA DE AUDIO */
+        .play-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .play-button:hover {
+            background: #00f2fe;
+            transform: translateY(-2px);
+        }
+        
+        .play-button.activated {
+            background: #42e695;
+            cursor: not-allowed;
+        }
+        
+        .audio-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .audio-indicator.playing {
+            display: block;
+            animation: pulse-audio 1.5s infinite;
+        }
+        
+        @keyframes pulse-audio {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .audio-controls {
+            display: none;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn:disabled:hover {
+            transform: none !important;
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3) !important;
+        }
+
+        @keyframes pulseAttention {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         /* Formas flotantes 3D */
         .floating-shapes {
             position: fixed;
@@ -620,6 +691,28 @@
     </style>
 </head>
 <body>
+    <!-- BOTÓN ACTIVAR AUDIO -->
+    <button class="play-button" id="playButton">🎵 Activar Audio</button>
+    
+    <!-- INDICADOR DE AUDIO -->
+    <div class="audio-indicator" id="audioIndicator">🔊 Reproduciendo audio...</div>
+    
+    <!-- CONTROLES DE AUDIO OCULTOS -->
+    <div class="audio-controls">
+        <audio id="audioPage6" preload="auto">
+            <source src="./mp3/page_6/page6_bienvenida.mp3" type="audio/mp3">
+        </audio>
+        <audio id="audioSiguiente" preload="auto">
+            <source src="./mp3/page_1/boton_siguiente.mp3" type="audio/mp3">
+        </audio>
+        <audio id="audioAtras" preload="auto">
+            <source src="./mp3/page_1/boton_atras.mp3" type="audio/mp3">
+        </audio>
+        <audio id="audioAbrirApp" preload="auto">
+            <source src="./mp3/page_6/boton_aplicacion.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
     <div class="floating-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
@@ -709,18 +802,181 @@
                 <span class="btn-icon">←</span>
                 <span class="btn-text">Anterior</span>
             </button>
-            <button class="btn btn-next" id="nextButton">
+            <button class="btn btn-next" id="nextButton" disabled>
                 <span class="btn-text">Finalizar</span>
                 <span class="btn-icon">✅</span>
             </button>
         </div>
     </div>
 
-    <!--<script src="/citrix/scripts/page_6.js"></script>-->
     <script>
+        class AudioManagerPage6 {
+            constructor() {
+                this.audioElements = {
+                    bienvenida: document.getElementById('audioPage6'),
+                    siguiente: document.getElementById('audioSiguiente'),
+                    atras: document.getElementById('audioAtras'),
+                    abrirApp: document.getElementById('audioAbrirApp')
+                };
+                
+                this.audioIndicator = document.getElementById('audioIndicator');
+                this.playButton = document.getElementById('playButton');
+                this.nextButton = document.getElementById('nextButton');
+                this.backButton = document.getElementById('backButton');
+                this.urlButton = document.getElementById('urlButton');
+                this.isPlaying = false;
+                this.audioEnabled = false;
+                this.currentAudio = null;
+                
+                this.setupAudioEvents();
+                this.setupActivationButton();
+                this.setupButtonAudios();
+            }
+
+            setupAudioEvents() {
+                // Configurar eventos para todos los audios
+                Object.values(this.audioElements).forEach(audio => {
+                    audio.addEventListener('play', () => {
+                        this.isPlaying = true;
+                        this.showAudioIndicator();
+                    });
+                    
+                    audio.addEventListener('ended', () => {
+                        this.isPlaying = false;
+                        this.hideAudioIndicator();
+                        
+                        // Habilitar botón siguiente cuando termina el audio de bienvenida
+                        if (audio === this.audioElements.bienvenida) {
+                            this.enableNextButton();
+                        }
+                    });
+                    
+                    audio.addEventListener('error', (e) => {
+                        console.log('Error de audio:', e);
+                        this.isPlaying = false;
+                        this.hideAudioIndicator();
+                        
+                        // Habilitar botón siguiente si falla el audio de bienvenida
+                        if (audio === this.audioElements.bienvenida) {
+                            this.enableNextButton();
+                        }
+                    });
+                });
+            }
+
+            setupActivationButton() {
+                this.playButton.addEventListener('click', () => {
+                    this.activateAudio();
+                });
+            }
+
+            setupButtonAudios() {
+                // Audio para botón Siguiente
+                this.nextButton.addEventListener('mouseenter', () => {
+                    if (this.audioEnabled && !this.nextButton.disabled) {
+                        this.playAudio('siguiente');
+                    }
+                });
+
+                // Audio para botón Atrás
+                this.backButton.addEventListener('mouseenter', () => {
+                    if (this.audioEnabled) {
+                        this.playAudio('atras');
+                    }
+                });
+
+                // Audio para botón Ver Aplicación
+                this.urlButton.addEventListener('mouseenter', () => {
+                    if (this.audioEnabled) {
+                        this.playAudio('abrirApp');
+                    }
+                });
+            }
+
+            activateAudio() {
+                if (!this.audioEnabled) {
+                    this.audioEnabled = true;
+                    this.playButton.textContent = '🎵 Audio Activado';
+                    this.playButton.classList.add('activated');
+                    this.playButton.disabled = true;
+                    
+                    // Reproducir audio de bienvenida inmediatamente
+                    this.playWelcomeAudio();
+                    
+                    console.log('Audio activado en page_6');
+                }
+            }
+
+            playWelcomeAudio() {
+                if (this.audioElements.bienvenida && this.audioEnabled) {
+                    this.audioElements.bienvenida.play().catch(e => {
+                        console.log('Error reproduciendo audio de bienvenida:', e);
+                        this.enableNextButton();
+                    });
+                } else {
+                    this.enableNextButton();
+                }
+            }
+
+            playAudio(audioKey) {
+                if (!this.audioEnabled || this.isPlaying) {
+                    return;
+                }
+                
+                const audio = this.audioElements[audioKey];
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play().catch(e => {
+                        console.log(`No se pudo reproducir ${audioKey}:`, e);
+                    });
+                }
+            }
+
+            stopAllAudio() {
+                Object.values(this.audioElements).forEach(audio => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                });
+                this.isPlaying = false;
+                this.hideAudioIndicator();
+            }
+
+            showAudioIndicator() {
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.add('playing');
+                }
+            }
+
+            hideAudioIndicator() {
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.remove('playing');
+                }
+            }
+
+            enableNextButton() {
+                if (this.nextButton) {
+                    this.nextButton.disabled = false;
+                    this.nextButton.innerHTML = '<span class="btn-text">Finalizar</span><span class="btn-icon">✅</span>';
+                    
+                    // Efecto de "pulso" en el botón para llamar atención
+                    this.nextButton.style.animation = 'pulseAttention 2s ease-in-out';
+                    
+                    setTimeout(() => {
+                        this.nextButton.style.animation = '';
+                    }, 2000);
+                }
+            }
+        }
+
+        // Inicializar el administrador de audio
+        const audioManager = new AudioManagerPage6();
+
         // Función para transición con efecto de ventana deslizante
         function transitionWithSlide(direction, targetUrl) {
             const container = document.querySelector('.container');
+            
+            // Detener audio si está reproduciendo
+            audioManager.stopAllAudio();
             
             // Aplicar animación de salida
             if (direction === 'next') {
@@ -757,6 +1013,8 @@
 
         // Botón Finalizar
         document.getElementById('nextButton').addEventListener('click', function() {
+            if (this.disabled) return;
+            
             // Efecto de clic
             this.style.transform = 'scale(0.95)';
             setTimeout(() => {
@@ -774,8 +1032,15 @@
                 this.style.transform = '';
             }, 200);
             
+            // Reproducir audio si está activado
+            if (audioManager.audioEnabled) {
+                audioManager.playAudio('abrirApp');
+            }
+            
             // Simular apertura de aplicación
-            alert('Aplicación Citrix abierta correctamente. Puedes comenzar a trabajar.');
+            setTimeout(() => {
+                alert('Aplicación Citrix abierta correctamente. Puedes comenzar a trabajar.');
+            }, 500);
         });
 
         // Botón Copiar Información
@@ -817,12 +1082,25 @@
         // Efectos de hover en los botones
         document.querySelectorAll('.btn').forEach(button => {
             button.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-3px)';
+                if (!this.disabled) {
+                    this.style.transform = 'translateY(-3px)';
+                }
             });
             
             button.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
+                if (!this.disabled) {
+                    this.style.transform = 'translateY(0)';
+                }
             });
+        });
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Deshabilitar botón siguiente inicialmente
+            const nextButton = document.getElementById('nextButton');
+            nextButton.disabled = true;
+            nextButton.style.opacity = '0.6';
+            nextButton.style.cursor = 'not-allowed';
         });
     </script>
 </body>

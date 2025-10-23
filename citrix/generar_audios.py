@@ -22,11 +22,17 @@ def generate_better_audio():
         #******************************************************************#
         #'page2_bienvenida' : 'Acceso a la Plataforma. Para acceder a la plataforma Citrix, ingresa a la siguiente liga oficial:'
         #******************************************************************#
-        'page3_bienvenida' : 'Acceso BBVA. Una vez dentro de la aplicacion, ingresaremos nuestros datos correspondientes, para acceder al contenido. Sigue las instrucciones que te muestra la imagen.'
+        #'page3_bienvenida' : 'Acceso BBVA. Una vez dentro de la aplicacion, ingresaremos nuestros datos correspondientes, para acceder al contenido. Sigue las instrucciones que te muestra la imagen.'
         #******************************************************************#
+        #'page4_bienvenida' : 'Dashboard principal:. Click en aplicaciones, para visualizar todas las ligas de acceso que tienes permitidas.'
         #******************************************************************#
+        #'page5_bienvenida' : 'Aplicaciones:. Para acceder, unicamente deberas dar doble clic al aplicativo que se requiera.'
         #******************************************************************#
+        #'page6_bienvenida' : 'Ventana de Aplicación. Aplicación Abierta. Has abierto correctamente la aplicación en una nueva ventana. Ahora puedes trabajar de manera segura en la plataforma Citrix.'
         #******************************************************************#
+        'page6_bienvenida' : 'Cierre de Sesión',
+        'page6_para' : 'Para cerrar sesión correctamente:. Haz clic en el engrane y selecciona Cerrar Sesión.',
+        'page6_recuerda' : 'Recuerda siempre, al término de tu jornada o descansos espaciosos, debes cerrar correctamente el aplicativo. Clic en *cerrar sesión*.'
         #******************************************************************#
         #******************************************************************#
     }
