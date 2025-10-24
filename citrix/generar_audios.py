@@ -9,7 +9,7 @@ def generate_better_audio():
     
     # Textos optimizados para mejor pronunciación
     audio_texts = {
-        #'welcome': 'Simulador Citrix. Aprende a utilizar la plataforma Citrix de forma interactiva y práctica. Domina todas las funciones con nuestro curso paso a paso.',
+        'welcome_Simulador': 'Simulador Citrix.' ,
         #'feature_contenido': 'Contenido Completo',
         #'feature_simulaciones': 'Simulaciones Interactivas', 
         #'feature_certificacion': 'Certificación',
@@ -30,9 +30,9 @@ def generate_better_audio():
         #******************************************************************#
         #'page6_bienvenida' : 'Ventana de Aplicación. Aplicación Abierta. Has abierto correctamente la aplicación en una nueva ventana. Ahora puedes trabajar de manera segura en la plataforma Citrix.'
         #******************************************************************#
-        'page6_bienvenida' : 'Cierre de Sesión',
-        'page6_para' : 'Para cerrar sesión correctamente:. Haz clic en el engrane y selecciona Cerrar Sesión.',
-        'page6_recuerda' : 'Recuerda siempre, al término de tu jornada o descansos espaciosos, debes cerrar correctamente el aplicativo. Clic en *cerrar sesión*.'
+        #'page6_bienvenida' : 'Cierre de Sesión',
+        #'page6_para' : 'Para cerrar sesión correctamente:. Haz clic en el engrane y selecciona Cerrar Sesión.',
+        #'page6_recuerda' : 'Recuerda siempre, al término de tu jornada o descansos espaciosos, debes cerrar correctamente el aplicativo. Clic en *cerrar sesión*.'
         #******************************************************************#
         #******************************************************************#
     }

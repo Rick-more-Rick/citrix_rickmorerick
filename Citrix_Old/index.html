@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Citrix - Inicio</title>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        /* ===== RESET Y CONFIGURACIONES GENERALES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333333;
+            overflow: hidden;
+            position: relative;
+            /* Restaurar cursor normal */
+            cursor: auto;
+        }
+
+        /* ===== CONTENEDOR PRINCIPAL - DISEÑO HORIZONTAL ===== */
+        .container {
+            max-width: 1200px; /* Aumentado para abarcar más espacio */
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px; /* Aumentado para más separación */
+            align-items: center;
+            padding: 60px; /* Aumentado para más espacio interno */
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        /* Animación de entrada desde la derecha */
+        @keyframes slideInFromRight {
+            from { 
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== PANEL IZQUIERDO - ANIMACIÓN LOTTIE ===== */
+        .left-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Contenedor de la animación Lottie - AUMENTADO DE TAMAÑO */
+        .lottie-container {
+            width: 450px; /* Aumentado de 300px a 450px */
+            height: 450px; /* Aumentado de 300px a 450px */
+            border-radius: 20px;
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+
+        /* ===== PANEL DERECHO - CONTENEDOR DEL CARRUSEL ===== */
+        .right-panel {
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            height: 500px; /* Altura fija para el carrusel */
+        }
+
+        /* ===== SLIDES DEL CARRUSEL ===== */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease;
+        }
+
+        /* Slide inicial (pantalla de bienvenida) */
+        .slide.welcome {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* Slide de "¿Qué es Citrix?" - Inicialmente oculto a la derecha */
+        .slide.citrix-info {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        /* Cuando el carrusel avanza a la segunda slide */
+        .carousel-advanced .slide.welcome {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .carousel-advanced .slide.citrix-info {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* ===== LOGO - TEXTO AUMENTADO ===== */
+        .logo-container {
+            margin-bottom: 50px; /* Aumentado para más separación */
+        }
+
+        .logo-main {
+            font-size: 4.5rem; /* Aumentado de 3.5rem a 4.5rem */
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px; /* Aumentado para más separación */
+        }
+
+        .logo-simulador {
+            color: #1a2a6c;
+            display: block;
+            background: linear-gradient(135deg, #1a2a6c, #1a2a6c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-citrix {
+            color: #fdbb2d;
+            display: block;
+            background: linear-gradient(135deg, #fdbb2d, #fdbb2d);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ===== CONTENIDO DE "¿QUÉ ES CITRIX?" ===== */
+        .citrix-content {
+            text-align: left;
+        }
+
+        .citrix-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a2a6c;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .citrix-description {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        /* ===== BOTÓN PRINCIPAL - COLOR VERDE CON TRIÁNGULO ===== */
+        .btn-start {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 25px 60px; /* Aumentado para botón más grande */
+            font-size: 1.5rem; /* Aumentado de 1.3rem a 1.5rem */
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 8px 25px rgba(40, 167, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            margin-bottom: 25px; /* Aumentado para más separación */
+            width: 100%;
+            max-width: 350px; /* Aumentado para botón más ancho */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Aumentado para más separación entre icono y texto */
+        }
+
+        /* Botón Continuar - AHORA VERDE COMO EL BOTÓN PRINCIPAL */
+        .btn-continue {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 25px 60px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 8px 25px rgba(40, 167, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Efecto de brillo al pasar el cursor */
+        .btn-start::before, .btn-continue::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-start:hover::before, .btn-continue:hover::before {
+            left: 100%;
+        }
+
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 30px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #34ce57, #28a745);
+        }
+
+        .btn-continue:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 30px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #34ce57, #28a745);
+        }
+
+        .btn-start:active:not(:disabled), .btn-continue:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        /* Triángulo estilo YouTube - AUMENTADO DE TAMAÑO */
+        .play-triangle {
+            width: 0;
+            height: 0;
+            border-left: 14px solid white; /* Aumentado de 12px a 14px */
+            border-top: 9px solid transparent; /* Aumentado de 8px a 9px */
+            border-bottom: 9px solid transparent; /* Aumentado de 8px a 9px */
+            margin-right: 5px;
+        }
+
+        /* Estados del botón */
+        .btn-start:disabled, .btn-continue:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-start:disabled:hover, .btn-continue:disabled:hover {
+            transform: none !important;
+            box-shadow: 
+                0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        /* ===== INDICADORES DE AUDIO ===== */
+        .audio-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            display: none;
+        }
+
+        .audio-indicator.playing {
+            display: block;
+            animation: pulse-audio 1.5s infinite;
+        }
+
+        @keyframes pulse-audio {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ===== BOTÓN DE ACTIVACIÓN DE AUDIO ===== */
+        .play-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(26, 42, 108, 0.3);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .play-button:hover {
+            background: #2a3a8c;
+            transform: translateY(-2px);
+        }
+
+        .play-button.activated {
+            background: #fdbb2d;
+            cursor: not-allowed;
+        }
+
+        /* Controles de audio ocultos */
+        .audio-controls {
+            display: none;
+        }
+
+        /* ===== TEXTO INFORMATIVO ===== */
+        .info-text {
+            font-size: 1rem; /* Aumentado de 0.9rem a 1rem */
+            color: #888888;
+            line-height: 1.4;
+        }
+
+        /* ===== EFECTO DE HABILITACIÓN DEL BOTÓN ===== */
+        @keyframes buttonEnable {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-start.enabled, .btn-continue.enabled {
+            animation: buttonEnable 0.6s ease;
+        }
+
+        /* ===== DISEÑO RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 900px;
+                gap: 60px;
+                padding: 50px;
+            }
+            
+            .lottie-container {
+                width: 380px;
+                height: 380px;
+            }
+            
+            .logo-main {
+                font-size: 4rem;
+            }
+            
+            .right-panel {
+                height: 450px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                align-items: flex-start;
+                padding-top: 80px;
+            }
+            
+            .container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 30px;
+                text-align: center;
+            }
+            
+            .right-panel {
+                text-align: center;
+                height: auto;
+                min-height: 400px;
+            }
+            
+            .logo-main {
+                font-size: 3.5rem; /* Aumentado de 3rem a 3.5rem */
+            }
+            
+            .lottie-container {
+                width: 320px; /* Aumentado de 250px a 320px */
+                height: 320px; /* Aumentado de 250px a 320px */
+            }
+            
+            .btn-start, .btn-continue {
+                margin: 0 auto 20px;
+            }
+            
+            .citrix-title {
+                font-size: 2rem;
+            }
+            
+            .citrix-description {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                gap: 30px;
+            }
+            
+            .logo-main {
+                font-size: 3rem; /* Aumentado de 2.5rem a 3rem */
+            }
+            
+            .lottie-container {
+                width: 280px; /* Aumentado de 200px a 280px */
+                height: 280px; /* Aumentado de 200px a 280px */
+            }
+            
+            .btn-start, .btn-continue {
+                padding: 20px 45px; /* Aumentado para mantener proporción */
+                font-size: 1.3rem; /* Aumentado de 1.1rem a 1.3rem */
+                max-width: 300px; /* Aumentado de 280px a 300px */
+            }
+            
+            .play-button {
+                top: 15px;
+                left: 15px;
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+            
+            .audio-indicator {
+                top: 15px;
+                right: 15px;
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .play-triangle {
+                border-left: 12px solid white; /* Aumentado de 10px a 12px */
+                border-top: 7px solid transparent; /* Aumentado de 6px a 7px */
+                border-bottom: 7px solid transparent; /* Aumentado de 6px a 7px */
+            }
+            
+            .citrix-title {
+                font-size: 1.8rem;
+            }
+            
+            .citrix-description {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== BOTÓN PARA ACTIVAR AUDIO ===== -->
+    <button class="play-button" id="playButton">🎵 Activar Audio</button>
+
+    <!-- ===== INDICADOR DE AUDIO ===== -->
+    <div class="audio-indicator" id="audioIndicator">🔊 Reproduciendo audio...</div>
+
+    <!-- ===== CONTROLES DE AUDIO OCULTOS ===== -->
+    <div class="audio-controls">
+        <audio id="audioWelcome" preload="auto">
+            <source src="./mp3/welcome_Simulador.mp3" type="audio/mp3">
+        </audio>
+        <audio id="audioPage1" preload="auto">
+            <source src="./mp3/page1_bienvenida.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <!-- ===== CONTENEDOR PRINCIPAL ===== -->
+    <div class="container">
+        <!-- Panel izquierdo - Animación Lottie (FIJO) -->
+        <div class="left-panel">
+            <div class="lottie-container">
+                <lottie-player 
+                    src="./lotties/main_estuden.json" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 100%; height: 100%;"
+                    loop 
+                    autoplay>
+                </lottie-player>
+            </div>
+        </div>
+
+        <!-- Panel derecho - Carrusel de contenido -->
+        <div class="right-panel" id="rightPanel">
+            <!-- Slide 1: Pantalla de bienvenida -->
+            <div class="slide welcome">
+                <div class="logo-container">
+                    <div class="logo-main">
+                        <span class="logo-simulador">Simulador</span>
+                        <span class="logo-citrix">Citrix</span>
+                    </div>
+                </div>
+
+                <!-- Botón principal para comenzar el curso -->
+                <button class="btn-start" id="startButton" disabled>
+                    <div class="play-triangle"></div>
+                    Comenzar Curso
+                </button>
+                
+                <!-- Texto informativo -->
+                <p class="info-text">Haz clic en "Activar Audio" para iniciar la experiencia guiada</p>
+            </div>
+
+            <!-- Slide 2: Información sobre Citrix -->
+            <div class="slide citrix-info">
+                <div class="citrix-content">
+                    <h1 class="citrix-title">¿Qué es Citrix?</h1>
+                    <p class="citrix-description">
+                        Es una plataforma que proporciona a los asesores del Contact Center un acceso seguro y unificado a aplicaciones, escritorios y datos desde su PC en su posición de trabajo.
+                        <br><br>
+                        Los asesores accederán a las herramientas necesarias para realizar sus tareas desde su lugar de trabajo.
+                    </p>
+                    
+                    <!-- Botón para continuar - AHORA VERDE -->
+                    <button class="btn-continue" id="continueButton" disabled>
+                        <div class="play-triangle"></div>
+                        Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CLASE PARA GESTIÓN DE AUDIO Y CARRUSEL =====
+        class AudioManager {
+            constructor() {
+                // Elementos de audio
+                this.audioElements = {
+                    welcome: document.getElementById('audioWelcome'),
+                    page1: document.getElementById('audioPage1')
+                };
+                
+                // Elementos de la interfaz
+                this.audioIndicator = document.getElementById('audioIndicator');
+                this.startButton = document.getElementById('startButton');
+                this.continueButton = document.getElementById('continueButton');
+                this.playButton = document.getElementById('playButton');
+                this.rightPanel = document.getElementById('rightPanel');
+                
+                // Estado del audio y carrusel
+                this.currentAudio = null;
+                this.isPlaying = false;
+                this.audioEnabled = false;
+                this.carouselAdvanced = false;
+                
+                // Configurar eventos
+                this.setupAudioEvents();
+                this.setupActivationButton();
+                this.setupCarouselEvents();
+            }
+
+            // ===== CONFIGURACIÓN DE EVENTOS DE AUDIO =====
+            setupAudioEvents() {
+                // Configurar eventos para el audio de bienvenida
+                this.audioElements.welcome.addEventListener('play', () => {
+                    this.isPlaying = true;
+                    this.showAudioIndicator();
+                });
+                
+                this.audioElements.welcome.addEventListener('ended', () => {
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                    this.enableStartButton();
+                });
+                
+                // Configurar eventos para el audio de página 1
+                this.audioElements.page1.addEventListener('play', () => {
+                    this.isPlaying = true;
+                    this.showAudioIndicator();
+                });
+                
+                this.audioElements.page1.addEventListener('ended', () => {
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                    this.enableContinueButton();
+                });
+                
+                this.audioElements.welcome.addEventListener('error', (e) => {
+                    console.log('Error de audio:', e);
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                    // Habilitar botón incluso si hay error en el audio
+                    setTimeout(() => {
+                        this.enableStartButton();
+                    }, 1000);
+                });
+                
+                this.audioElements.page1.addEventListener('error', (e) => {
+                    console.log('Error de audio página 1:', e);
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                    // Habilitar botón incluso si hay error en el audio
+                    setTimeout(() => {
+                        this.enableContinueButton();
+                    }, 1000);
+                });
+            }
+
+            // ===== CONFIGURACIÓN DEL BOTÓN DE ACTIVACIÓN =====
+            setupActivationButton() {
+                this.playButton.addEventListener('click', () => {
+                    this.activateAudio();
+                });
+            }
+
+            // ===== CONFIGURACIÓN DE EVENTOS DEL CARRUSEL =====
+            setupCarouselEvents() {
+                // Evento para el botón de comenzar curso
+                this.startButton.addEventListener('click', () => {
+                    if (this.startButton.disabled) return;
+                    
+                    // Efecto de clic
+                    this.startButton.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.startButton.style.transform = '';
+                    }, 150);
+                    
+                    // Avanzar carrusel y reproducir audio de página 1
+                    this.advanceCarousel();
+                });
+                
+                // Evento para el botón de continuar
+                this.continueButton.addEventListener('click', () => {
+                    if (this.continueButton.disabled) return;
+                    
+                    // Efecto de clic
+                    this.continueButton.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.continueButton.style.transform = '';
+                    }, 150);
+                    
+                    // Navegar a la siguiente página
+                    this.goToNextPage();
+                });
+            }
+
+            // ===== ACTIVACIÓN DEL AUDIO =====
+            activateAudio() {
+                if (!this.audioEnabled) {
+                    this.audioEnabled = true;
+                    this.playButton.textContent = '🎵 Audio Activado';
+                    this.playButton.classList.add('activated');
+                    this.playButton.disabled = true;
+                    
+                    // Reproducir audio de bienvenida inmediatamente
+                    this.playWelcomeAudio();
+                    
+                    console.log('Audio activado - Página 1');
+                }
+            }
+
+            // ===== REPRODUCCIÓN DEL AUDIO DE BIENVENIDA =====
+            playWelcomeAudio() {
+                if (this.audioElements.welcome && this.audioEnabled) {
+                    this.audioElements.welcome.play().catch(e => {
+                        console.log('Error en audio de bienvenida:', e);
+                        // Habilitar botón incluso si hay error
+                        setTimeout(() => {
+                            this.enableStartButton();
+                        }, 1000);
+                    });
+                } else {
+                    // Si no hay audio, habilitar botón después de un tiempo
+                    setTimeout(() => {
+                        this.enableStartButton();
+                    }, 2000);
+                }
+            }
+
+            // ===== AVANCE DEL CARRUSEL =====
+            advanceCarousel() {
+                if (!this.carouselAdvanced) {
+                    this.carouselAdvanced = true;
+                    
+                    // Aplicar clase para animar el carrusel
+                    this.rightPanel.classList.add('carousel-advanced');
+                    
+                    // Reproducir audio de página 1 después de un breve delay
+                    setTimeout(() => {
+                        this.playPage1Audio();
+                    }, 800);
+                    
+                    console.log('Carrusel avanzado a información Citrix');
+                }
+            }
+
+            // ===== REPRODUCCIÓN DEL AUDIO DE PÁGINA 1 =====
+            playPage1Audio() {
+                if (this.audioElements.page1) {
+                    this.audioElements.page1.play().catch(e => {
+                        console.log('Error en audio de página 1:', e);
+                        // Habilitar botón de continuar incluso si hay error
+                        setTimeout(() => {
+                            this.enableContinueButton();
+                        }, 1000);
+                    });
+                } else {
+                    // Si no hay audio, habilitar botón después de un tiempo
+                    setTimeout(() => {
+                        this.enableContinueButton();
+                    }, 2000);
+                }
+            }
+
+            // ===== HABILITAR BOTÓN DE INICIO =====
+            enableStartButton() {
+                if (this.startButton) {
+                    this.startButton.disabled = false;
+                    this.startButton.classList.add('enabled');
+                    
+                    // Efecto visual adicional
+                    setTimeout(() => {
+                        this.startButton.classList.remove('enabled');
+                    }, 600);
+                }
+            }
+
+            // ===== HABILITAR BOTÓN DE CONTINUAR =====
+            enableContinueButton() {
+                if (this.continueButton) {
+                    this.continueButton.disabled = false;
+                    this.continueButton.classList.add('enabled');
+                    
+                    // Efecto visual adicional
+                    setTimeout(() => {
+                        this.continueButton.classList.remove('enabled');
+                    }, 600);
+                }
+            }
+
+            // ===== DETENER TODO EL AUDIO =====
+            stopAllAudio() {
+                Object.values(this.audioElements).forEach(audio => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                });
+                this.isPlaying = false;
+                this.hideAudioIndicator();
+            }
+
+            // ===== MOSTRAR INDICADOR DE AUDIO =====
+            showAudioIndicator() {
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.add('playing');
+                }
+            }
+
+            // ===== OCULTAR INDICADOR DE AUDIO =====
+            hideAudioIndicator() {
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.remove('playing');
+                }
+            }
+
+            // ===== NAVEGACIÓN A LA SIGUIENTE PÁGINA =====
+            goToNextPage() {
+                const container = document.querySelector('.container');
+                
+                // Detener audio si está reproduciendo
+                this.stopAllAudio();
+                
+                // Aplicar animación de salida
+                container.style.animation = 'slideInFromRight 0.6s ease-in reverse forwards';
+                
+                // Deshabilitar interacción durante la transición
+                this.continueButton.style.pointerEvents = 'none';
+                
+                // Redirigir después de la animación
+                setTimeout(() => {
+                    window.location.href = 'page_1.html';
+                }, 600);
+            }
+        }
+
+        // ===== INICIALIZACIÓN CUANDO EL DOCUMENTO ESTÁ LISTO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar efectos de hover en los botones
+            const startButton = document.getElementById('startButton');
+            const continueButton = document.getElementById('continueButton');
+            
+            // Efectos de hover en el botón de comenzar
+            if (startButton) {
+                startButton.addEventListener('mouseenter', function() {
+                    if (!this.disabled) {
+                        this.style.transform = 'translateY(-2px)';
+                    }
+                });
+                
+                startButton.addEventListener('mouseleave', function() {
+                    if (!this.disabled) {
+                        this.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+            
+            // Efectos de hover en el botón de continuar
+            if (continueButton) {
+                continueButton.addEventListener('mouseenter', function() {
+                    if (!this.disabled) {
+                        this.style.transform = 'translateY(-2px)';
+                    }
+                });
+                
+                continueButton.addEventListener('mouseleave', function() {
+                    if (!this.disabled) {
+                        this.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+        });
+
+        // ===== CONTROL PARA PAUSAR AUDIO CON TECLA ESPACIO =====
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                event.preventDefault();
+                audioManager.stopAllAudio();
+            }
+        });
+
+        // ===== INICIALIZAR GESTOR DE AUDIO Y CARRUSEL =====
+        const audioManager = new AudioManager();
+    </script>
+</body>
+</html>
