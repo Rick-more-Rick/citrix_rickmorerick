@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBVA - Guía (Carrusel)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: white;
+            color: #333;
+            min-height: 100vh;
+            /* AÑADIDO: Oculta la barra de desplazamiento horizontal del carrusel */
+            overflow-x: hidden; 
+        }
+
+        /* [Estilos de Barra Superior y Contenido Omitidos por brevedad, son los mismos] */
+
+        /* --- Estilos de la Burbuja Informativa (NUEVOS) --- */
+        .info-bubble-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            align-items: flex-end;
+            max-width: 550px;
+            z-index: 100;
+            opacity: 0; /* Oculto al inicio, se muestra al activar el audio */
+            transition: opacity 0.5s ease;
+        }
+
+        .info-bubble-container.visible {
+            opacity: 1;
+        }
+
+        /* Lottie Teacher */
+        #teacher-lottie {
+            width: 150px;
+            height: 150px;
+            flex-shrink: 0;
+            margin-right: -30px; /* Superponer ligeramente la burbuja */
+            margin-bottom: -15px; /* Ajuste visual */
+        }
+        
+        /* Burbuja de Texto */
+        .info-bubble {
+            background-color: #a4c9f7; /* Azul claro para el fondo de la burbuja */
+            color: #004481; /* Texto en azul oscuro */
+            padding: 20px 25px 20px 60px; /* Padding extra a la izquierda para el personaje */
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* Simulación del círculo "i" (Información) - Se usará un icono simple */
+        .info-bubble::after {
+            content: 'i';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 35px;
+            height: 35px;
+            background-color: #ffda6a; /* Amarillo */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #004481;
+        }
+        
+        /* Estilos de Barra Superior y Contenido Omitidos por brevedad, son los mismos que antes */
+        .header-main {
+            display: flex;
+            align-items: stretch;
+            height: 60px;
+            background-color: #004481; 
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            background-color: #004481;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            width: 150px; 
+            flex-shrink: 0; 
+        }
+        .utility-icons {
+            display: flex;
+            align-items: center;
+            background-color: #004481;
+            padding: 0 20px;
+            color: white;
+            gap: 20px;
+            width: 150px; 
+            justify-content: flex-end;
+            flex-shrink: 0; 
+        }
+        .utility-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .nav-tabs {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            flex-grow: 1;
+            background-color: #004481;
+        }
+        .nav-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 25px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+        .nav-tab.active {
+            background-color: #3b82f6;
+        }
+        .nav-tab-icon {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+        .nav-tab.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        /*.content-container {
+            /* ESTILO OBSOLETO: Se usará #main-stage */
+            /* padding: 30px 40px; */
+            /* background-color: white; */
+        /*} */
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #333;
+            margin-bottom: 50px;
+        }
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 50px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .star-icon {
+            font-size: 3.5rem;
+            color: #ccc;
+            margin-bottom: 25px;
+            opacity: 0.7;
+        }
+        .empty-text {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        #audio-button-container {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 1000;
+        }
+        #activate-audio {
+            background-color: #004481;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        #activate-audio:hover {
+            background-color: #3b82f6;
+        }
+
+        /* --- AÑADIDOS DE ESTILOS DE CARRUSEL Y APLICACIONES --- */
+        #main-stage {
+            display: flex;
+            width: 200vw; /* Dos secciones de 100% cada una */
+            transition: transform 0.5s ease-in-out; /* Animación de carrusel */
+        }
+        .page-section {
+            width: 100vw;
+            flex-shrink: 0;
+            padding: 30px 40px;
+            min-height: calc(100vh - 60px); /* Altura total - altura del navbar */
+        }
+        #page-aplicaciones {
+            padding-top: 20px;
+            background-color: white;
+        }
+        #page-aplicaciones h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .sub-nav-tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 30px;
+        }
+        .sub-tab {
+            padding: 10px 0;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+        }
+        .sub-tab.active {
+            color: #004481;
+            border-bottom: 2px solid #004481;
+            margin-bottom: -2px; 
+        }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 25px 15px;
+        }
+        .app-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 10px 5px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            position: relative;
+        }
+        .app-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .app-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .app-icon .chrome-icon {
+            width: 100%;
+            height: 100%;
+        }
+        .app-card i.fa-star {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        .app-card h4 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+        .app-card span {
+            font-size: 0.7rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-main">
+        
+        <div class="logo-container">
+            BBVA
+        </div>
+
+        <nav class="nav-tabs">
+            <div class="nav-tab active" id="inicio-tab">
+                <i class="fas fa-home nav-tab-icon"></i>
+                <span>INICIO</span>
+            </div>
+            
+            <div class="nav-tab disabled" id="aplicaciones-tab">
+                <i class="fas fa-th-large nav-tab-icon"></i>
+                <span>APLICACIONES</span>
+            </div>
+        </nav>
+
+        <div class="utility-icons">
+            <i class="fas fa-search utility-icon"></i>
+            <i class="fas fa-cog utility-icon"></i>
+        </div>
+
+    </header>
+
+    <div id="audio-button-container">
+        <button id="activate-audio">
+            <i class="fas fa-volume-up"></i> 
+            <span>Activar Audio Guía</span>
+        </button>
+    </div>
+
+    <audio id="audio-inicio" src="./mp3/page4_bienvenida.mp3" preload="auto"></audio>
+    <audio id="audio-aplicaciones" src="./mp3/page5_bienvenida.mp3" preload="auto"></audio>
+
+    <main id="main-stage">
+        
+        <section class="page-section" id="page-inicio">
+            <h1 class="welcome-title">¡Bienvenido, Apellido y Nombre!</h1>
+            
+            <div class="empty-state">
+                <div class="star-icon">
+                    <i class="far fa-star"></i> 
+                </div>
+                
+                <p class="empty-text">
+                    <strong>Todavía no tiene ninguna aplicación favorita.</strong>
+                </p>
+                <p class="empty-text instruction-line">
+                    Para empezar, vaya a Aplicaciones y toque o haga clic en la estrella de un elemento para añadirlo a sus favoritos.
+                </p>
+            </div>
+
+            <div style="position: fixed; bottom: -100px; left: 0; width: 100%; height: 200px; background: linear-gradient(to top, #7f51a4 0%, rgba(255,255,255,0) 80%); opacity: 0.1;"></div>
+        </section>
+
+
+        <section class="page-section" id="page-aplicaciones">
+            <h2>Aplicaciones</h2>
+
+            <div class="sub-nav-tabs">
+                <div class="sub-tab active">Todo (19)</div>
+                <div class="sub-tab">Favoritos (0)</div>
+                <div class="sub-tab">Categorías <i class="fas fa-angle-down"></i></div>
+            </div>
+
+            <div class="app-grid">
+                </div>
+        </section>
+
+    </main>
+
+
+    <div class="info-bubble-container" id="info-bubble-container">
+        <lottie-player 
+            id="teacher-lottie"
+            src="./lotties/teacher.json" 
+            background="transparent"  
+            speed="1"  
+            loop 
+            autoplay 
+            style="width: 150px; height: 150px;"
+        ></lottie-player>
+        
+        <div class="info-bubble">
+            <span id="typewriter-text"></span>
+        </div>
+    </div>
+
+    <script>
+        // --- AÑADIDOS DE DATOS Y FUNCIONES ---
+        
+        // SVG del logo de Chrome
+        const CHROME_SVG = `
+            <svg class="chrome-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path fill="#4285F4" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"/>
+                <path fill="#34A853" d="M256 464A208 208 0 1 0 256 48a208 208 0 1 0 0 416z"/>
+                <path fill="#FBBC05" d="M256 400a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+                <path fill="#EA4335" d="M256 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/>
+            </svg>
+        `;
+
+        const APP_NAMES = [
+            "CCD Backoffice Aclaraciones", "CCD LO", "CCD WAS9", "CC2 Liga oculta", "CC2 Producción", 
+            "Clipcert LP", "CUC Atento C2", "CUC Muñoz C11", "Cyber 8", "Cyber 9 vía 2", 
+            "Cyber 9 vía 3", "Cyber 9 vía 4", "FUD", "Future Space", "ietablehelper", 
+            "Lynx Firefox", "PU - Emulación 3270", "Tipificador SDAT WAS 6", "Tipificador SDAT WAS 8"
+        ];
+        
+        // Función para generar las tarjetas de aplicación
+        function generateAppCards(nextPageUrl) {
+            const grid = document.querySelector('.app-grid');
+            if (!grid) return;
+            grid.innerHTML = APP_NAMES.map(name => `
+                <div class="app-card" data-app-name="${name.replace(/\s/g, '_')}">
+                    <i class="far fa-star"></i>
+                    <div class="app-icon">
+                        ${CHROME_SVG}
+                    </div>
+                    <h4>${name}</h4>
+                    <span>Contact Center</span>
+                </div>
+            `).join('');
+
+            // **NUEVO: Agregar el evento de doble clic a todas las tarjetas**
+            document.querySelectorAll('.app-card').forEach(card => {
+                card.addEventListener('dblclick', () => {
+                    window.location.href = nextPageUrl;
+                });
+            });
+        }
+        
+        // --- FIN DE AÑADIDOS DE DATOS Y FUNCIONES ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar tarjetas con la siguiente URL de la guía
+            generateAppCards('page_6.html'); 
+            
+            // **IMPORTANTE: Referenciar ambos audios**
+            const audioInicio = document.getElementById('audio-inicio');
+            const audioAplicaciones = document.getElementById('audio-aplicaciones');
+            let currentAudio = audioInicio; // El audio inicial es el de la bienvenida (page4)
+            
+            const audioButton = document.getElementById('activate-audio');
+            const inicioTab = document.getElementById('inicio-tab'); 
+            const aplicacionesTab = document.getElementById('aplicaciones-tab');
+            const mainStage = document.getElementById('main-stage'); 
+            const lottiePlayer = document.getElementById('teacher-lottie');
+            const textElement = document.getElementById('typewriter-text');
+            const bubbleContainer = document.getElementById('info-bubble-container');
+            
+            // Textos para cada escena
+            const TEXT_INICIO = "Dashboard principal.\nClic en 'aplicaciones' para visualizar todas las ligas de acceso que tienes permitidas.";
+            const TEXT_APLICACIONES = "Aplicaciones.\nPara acceder únicamente deberás dar doble clic al aplicativo que se requiera.";
+            
+            let currentText = TEXT_INICIO;
+            let audioActivated = false;
+            let currentInterval; 
+
+            // Función del efecto de máquina de escribir
+            function typeWriterEffect(text, duration) {
+                textElement.textContent = '';
+                clearInterval(currentInterval);
+                
+                const totalChars = text.length;
+                // La duración se calcula a partir del audio que se está reproduciendo
+                const interval = duration / totalChars; 
+                let charIndex = 0;
+                
+                currentInterval = setInterval(() => {
+                    if (charIndex < totalChars) {
+                        const char = text.charAt(charIndex);
+                        if (char === '\n') {
+                            // Reemplazar el \n por <br> para salto de línea en HTML
+                            textElement.innerHTML = textElement.innerHTML.slice(0, -1) + '<br>'; 
+                        } else {
+                            textElement.textContent += char;
+                        }
+                        charIndex++;
+                    } else {
+                        clearInterval(currentInterval);
+                    }
+                }, interval);
+            }
+            
+            // Función para detener y restablecer el audio al cambiar de escena
+            function stopCurrentAudio() {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+            }
+
+            // Función de Transición del Carrusel (MODIFICADO para gestionar el audio y su duración)
+            function goToScene(sceneIndex, newText, newAudio) {
+                // 1. Detener audio anterior y preparar el nuevo
+                stopCurrentAudio();
+                currentAudio = newAudio;
+                currentText = newText;
+
+                // 2. Mueve el carrusel y actualiza el NavBar
+                mainStage.style.transform = `translateX(-${sceneIndex * 100}vw)`;
+                inicioTab.classList.remove('active');
+                aplicacionesTab.classList.remove('active');
+                if (sceneIndex === 0) {
+                    inicioTab.classList.add('active');
+                } else {
+                    aplicacionesTab.classList.add('active');
+                }
+                
+                // 3. Reproducir el nuevo audio y sincronizar el Typewriter
+                if (audioActivated) {
+                    // Deshabilitar tabs para forzar la atención en la guía
+                    aplicacionesTab.classList.add('disabled');
+                    inicioTab.classList.add('disabled');
+
+                    currentAudio.play().then(() => {
+                        lottiePlayer.play();
+                        // Usar la duración real del nuevo audio para la sincronización
+                        const audioDuration = currentAudio.duration * 1000; 
+                        typeWriterEffect(currentText, audioDuration);
+                    }).catch(error => {
+                        console.error("Error al reproducir el audio de la escena:", error);
+                        // Si falla el audio, usar una duración fija para el texto
+                        typeWriterEffect(currentText, 6000); 
+                    });
+                }
+                
+                // 4. Lógica de re-habilitación (al terminar el audio actual)
+                currentAudio.onended = () => {
+                    console.log(`Audio de escena ${sceneIndex} terminado. Habilitando tabs.`);
+                    aplicacionesTab.classList.remove('disabled');
+                    inicioTab.classList.remove('disabled');
+                    lottiePlayer.pause();
+                };
+            }
+            
+            // Inicia la interacción (Lógica original, ahora usa audioInicio)
+            audioButton.addEventListener('click', () => {
+                if (!audioActivated) {
+                    currentAudio = audioInicio; // Asegura que inicie con el audio 1
+                    currentAudio.play().then(() => {
+                        bubbleContainer.classList.add('visible');
+                        lottiePlayer.play();
+
+                        const audioDuration = currentAudio.duration * 1000;
+                        typeWriterEffect(currentText, audioDuration);
+
+                        audioButton.textContent = 'Audio Guía Activo...';
+                        audioButton.disabled = true;
+                        audioActivated = true;
+                    }).catch(error => {
+                        console.error("Error al reproducir el audio automáticamente:", error);
+                        alert("Por favor, active la reproducción automática para continuar la guía.");
+                    });
+                }
+            });
+
+            // Condición de Finalización: Detener todo al terminar el audio de INICIO
+            audioInicio.onended = () => {
+                console.log("Audio de Inicio terminado. Habilitando pestaña 'Aplicaciones'.");
+                aplicacionesTab.classList.remove('disabled');
+                // Mantener el botón de audio deshabilitado hasta que se haga clic en aplicaciones
+                // audioButton.textContent = 'Audio Finalizado'; 
+                lottiePlayer.pause(); 
+            };
+
+            // Lógica de navegación a APLICACIONES (Usa goToScene)
+            aplicacionesTab.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                if (!aplicacionesTab.classList.contains('disabled')) {
+                    // Transición a la escena 1: Aplicaciones. Usa el nuevo audio.
+                    goToScene(1, TEXT_APLICACIONES, audioAplicaciones); 
+                }
+            });
+            
+            // Lógica para volver a INICIO (Usa goToScene)
+            inicioTab.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!inicioTab.classList.contains('disabled')) {
+                    // Transición a la escena 0: Inicio. Vuelve al audio original.
+                    goToScene(0, TEXT_INICIO, audioInicio); 
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

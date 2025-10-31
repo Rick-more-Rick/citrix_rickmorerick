@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso BBVA Simulador Citrix</title>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.08),
+                0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eaeaea;
+            position: relative;
+        }
+
+        /* Layout - Solo formulario que ocupa todo */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #004481;
+        }
+
+        .title-highlight {
+            color: #F7931E;
+        }
+
+        .title-underline {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #004481, #0066cc);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* Tarjeta BBVA - Ocupa todo el espacio */
+        .bbva-login-card {
+            background: linear-gradient(135deg, #004481, #0066cc);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 
+                0 15px 35px rgba(0, 68, 129, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bbva-login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #F7931E, #FFB366);
+        }
+
+        /* Header de la tarjeta BBVA */
+        .bbva-card-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .bbva-logo-main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .bbva-logo-main svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .bbva-header-text {
+            flex: 1;
+        }
+
+        .bbva-header-text h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .bbva-header-text p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+
+        /* Contenido principal - Formulario e instrucciones lado a lado */
+        .bbva-card-content {
+            color: white;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Formulario más grande, instrucciones más pequeñas */
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* Sección del formulario */
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bbva-card-content .form-group {
+            margin-bottom: 20px;
+        }
+
+        .bbva-card-content .form-group label {
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .bbva-card-content .input-container {
+            position: relative;
+        }
+
+        .bbva-card-content .input-prefix {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 5px;
+        }
+
+        .bbva-card-content .form-group input {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            padding: 15px 15px 15px 70px;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .bbva-card-content .form-group input:focus {
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+        }
+
+        .bbva-card-content .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Botón de login BBVA */
+        .bbva-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: linear-gradient(135deg, #F7931E, #FFB366);
+            border: none;
+            color: white;
+            padding: 16px 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 20px rgba(247, 147, 30, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            margin-top: 15px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .bbva-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 25px rgba(247, 147, 30, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            opacity: 1;
+        }
+
+        .bbva-login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Sección de instrucciones COMPACTA */
+        .instructions-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            max-height: 400px;
+        }
+
+        .instructions-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .instructions-icon {
+            font-size: 1.4rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .instructions-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .instructions-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Animación Lottie más pequeña */
+        .lottie-mini {
+            margin: 10px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .instruction-icon {
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px;
+            border-radius: 6px;
+            min-width: 35px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .instruction-text {
+            flex: 1;
+            color: rgba(255, 255, 255, 0.95);
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+
+        .instruction-text strong {
+            color: #FFB366;
+        }
+
+        .instruction-note {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            font-weight: 500;
+            margin-top: 12px;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* Navegación */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #004481;
+            border: none;
+            color: white;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 25px rgba(0, 68, 129, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 30px rgba(0, 68, 129, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-back {
+            background: #6c757d;
+            box-shadow: 
+                0 8px 25px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-next {
+            background: #28a745;
+            box-shadow: 
+                0 8px 25px rgba(40, 167, 69, 0.2);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Botón de audio */
+        .play-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #004481;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 68, 129, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .play-button:hover {
+            background: #0066cc;
+            transform: translateY(-2px);
+        }
+        
+        .play-button.activated {
+            background: #28a745;
+            cursor: not-allowed;
+        }
+        
+        .audio-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .audio-indicator.playing {
+            display: block;
+            animation: pulse-audio 1.5s infinite;
+        }
+        
+        @keyframes pulse-audio {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .audio-controls {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .bbva-card-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .instructions-section {
+                order: -1;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .bbva-login-card {
+                padding: 25px 20px;
+                min-height: auto;
+            }
+            
+            .bbva-card-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .bbva-header-text h3 {
+                font-size: 1.6rem;
+            }
+            
+            .bbva-logo-main svg {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .bbva-login-card {
+                padding: 20px 15px;
+            }
+            
+            .bbva-header-text h3 {
+                font-size: 1.4rem;
+            }
+            
+            .bbva-logo-main {
+                padding: 10px;
+            }
+            
+            .bbva-logo-main svg {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .instructions-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- BOTÓN ACTIVAR AUDIO -->
+    <button class="play-button" id="playButton">🎵 Activar Audio</button>
+    
+    <!-- INDICADOR DE AUDIO -->
+    <div class="audio-indicator" id="audioIndicator">🔊 Reproduciendo audio...</div>
+    
+    <!-- CONTROLES DE AUDIO OCULTOS -->
+    <div class="audio-controls">
+        <audio id="audioPage3" preload="auto">
+            <source src="./mp3/page3_bienvenida.mp3" type="audio/mp3">
+        </audio>
+        <audio id="audioSiguiente" preload="auto">
+            <source src="./mp3/boton_siguiente.mp3" type="audio/mp3">
+        </audio>
+        <audio id="audioAtras" preload="auto">
+            <source src="./mp3/boton_atras.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Título -->
+            <div class="header">
+                <h1 class="title">Acceso <span class="title-highlight">BBVA</span></h1>
+            </div>
+            
+            <!-- Tarjeta BBVA que ocupa toda la pantalla -->
+            <div class="bbva-login-card">
+                <div class="bbva-card-header">
+                    <div class="bbva-logo-main">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                            <rect width="60" height="60" rx="12" fill="#004481"/>
+                            <path d="M18 30C18 23.3726 23.3726 18 30 18C36.6274 18 42 23.3726 42 30C42 36.6274 36.6274 42 30 42C23.3726 42 18 36.6274 18 30Z" fill="#F7931E"/>
+                            <path d="M27 24H33V36H27V24Z" fill="white"/>
+                            <path d="M24 27H36V33H24V27Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="bbva-header-text">
+                        <h3>Iniciar Sesión BBVA</h3>
+                        <p>Acceso seguro a la plataforma bancaria</p>
+                    </div>
+                </div>
+                
+                <div class="bbva-card-content">
+                    <!-- Sección del formulario -->
+                    <div class="form-section">
+                        <form class="login-form" id="loginForm">
+                            <div class="form-group">
+                                <label for="username">Nombre de usuario</label>
+                                <div class="input-container">
+                                    <span class="input-prefix">CB\</span>
+                                    <input type="text" id="username" name="username" placeholder="USUARIO PERSONAL">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Contraseña</label>
+                                <input type="password" id="password" name="password" placeholder="CONTRASEÑA">
+                            </div>
+                            
+                            <button type="button" class="bbva-login-btn" id="loginButton">
+                                <span class="btn-icon">→</span>
+                                <span class="btn-text">Iniciar sesión</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Sección de instrucciones COMPACTA -->
+                    <div class="instructions-section">
+                        <div class="instructions-header">
+                            <div class="instructions-icon">💡</div>
+                            <div class="instructions-title">Instrucciones</div>
+                        </div>
+                        
+                        <div class="instructions-content">
+                            <!-- Animación Lottie pequeña -->
+                            <div class="lottie-mini">
+                                <lottie-player 
+                                    src="https://assets1.lottiefiles.com/packages/lf20_ktwnwv5m.json" 
+                                    background="transparent" 
+                                    speed="1" 
+                                    style="width: 100%; height: 80px;" 
+                                    loop 
+                                    autoplay>
+                                </lottie-player>
+                            </div>
+                            
+                            <div class="instruction-item">
+                                <span class="instruction-icon">👤</span>
+                                <div class="instruction-text">
+                                    <strong>USUARIO:</strong> CB\usuario personal
+                                </div>
+                            </div>
+                            <div class="instruction-item">
+                                <span class="instruction-icon">🔐</span>
+                                <div class="instruction-text">
+                                    <strong>CONTRASEÑA:</strong> Definida en sistemas BBVA
+                                </div>
+                            </div>
+                            <div class="instruction-note">
+                                Llenar campos y click en "Iniciar sesión"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navegación -->
+        <div class="navigation">
+            <button class="btn btn-back" id="backButton">
+                <span class="btn-icon">←</span>
+                <span class="btn-text">Anterior</span>
+            </button>
+            <button class="btn btn-next" id="nextButton">
+                <span class="btn-text">Siguiente</span>
+                <span class="btn-icon">→</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        class AudioManagerPage3 {
+            constructor() {
+                this.audioElements = {
+                    bienvenida: document.getElementById('audioPage3'),
+                    siguiente: document.getElementById('audioSiguiente'),
+                    atras: document.getElementById('audioAtras')
+                };
+                
+                this.audioIndicator = document.getElementById('audioIndicator');
+                this.playButton = document.getElementById('playButton');
+                this.nextButton = document.getElementById('nextButton');
+                this.backButton = document.getElementById('backButton');
+                this.loginButton = document.getElementById('loginButton');
+                this.isPlaying = false;
+                this.audioEnabled = false;
+                this.currentAudio = null;
+                
+                this.setupAudioEvents();
+                this.setupActivationButton();
+                this.setupButtonAudios();
+            }
+
+            setupAudioEvents() {
+                // Configurar eventos para todos los audios
+                Object.values(this.audioElements).forEach(audio => {
+                    audio.addEventListener('play', () => {
+                        this.isPlaying = true;
+                        this.showAudioIndicator();
+                    });
+                    
+                    audio.addEventListener('ended', () => {
+                        this.isPlaying = false;
+                        this.hideAudioIndicator();
+                    });
+                    
+                    audio.addEventListener('error', (e) => {
+                        console.log('Error de audio:', e);
+                        this.isPlaying = false;
+                        this.hideAudioIndicator();
+                    });
+                });
+            }
+
+            setupActivationButton() {
+                this.playButton.addEventListener('click', () => {
+                    this.activateAudio();
+                });
+            }
+
+            setupButtonAudios() {
+                // Audio para botón Siguiente
+                this.nextButton.addEventListener('mouseenter', () => {
+                    if (this.audioEnabled) {
+                        this.playAudio('siguiente');
+                    }
+                });
+
+                // Audio para botón Atrás
+                this.backButton.addEventListener('mouseenter', () => {
+                    if (this.audioEnabled) {
+                        this.playAudio('atras');
+                    }
+                });
+
+                // Audio para botón Login (en hover)
+                this.loginButton.addEventListener('mouseenter', () => {
+                    if (this.audioEnabled) {
+                        this.playAudio('siguiente');
+                    }
+                });
+            }
+
+            activateAudio() {
+                if (!this.audioEnabled) {
+                    this.audioEnabled = true;
+                    this.playButton.textContent = '🎵 Audio Activado';
+                    this.playButton.classList.add('activated');
+                    this.playButton.disabled = true;
+                    
+                    // Reproducir audio de bienvenida inmediatamente
+                    this.playWelcomeAudio();
+                    
+                    console.log('Audio activado en page_3');
+                }
+            }
+
+            playWelcomeAudio() {
+                if (this.audioElements.bienvenida && this.audioEnabled) {
+                    this.audioElements.bienvenida.play().catch(e => {
+                        console.log('Error reproduciendo audio de bienvenida:', e);
+                    });
+                }
+            }
+
+            playAudio(audioKey) {
+                if (!this.audioEnabled || this.isPlaying) {
+                    return;
+                }
+                
+                const audio = this.audioElements[audioKey];
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play().catch(e => {
+                        console.log(`No se pudo reproducir ${audioKey}:`, e);
+                    });
+                }
+            }
+
+            stopAllAudio() {
+                Object.values(this.audioElements).forEach(audio => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                });
+                this.isPlaying = false;
+                this.hideAudioIndicator();
+            }
+
+            showAudioIndicator() {
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.add('playing');
+                }
+            }
+
+            hideAudioIndicator() {
+                if (this.audioIndicator) {
+                    this.audioIndicator.classList.remove('playing');
+                }
+            }
+        }
+
+        // Inicializar el administrador de audio
+        const audioManager = new AudioManagerPage3();
+
+        // Botón Volver
+        document.getElementById('backButton').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 200);
+            
+            // Detener audio si está reproduciendo
+            audioManager.stopAllAudio();
+            
+            // Redirigir después de un breve retraso
+            setTimeout(() => {
+                window.location.href = 'page_2.html';
+            }, 300);
+        });
+
+        // Botón Continuar
+        document.getElementById('nextButton').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 200);
+            
+            // Detener audio si está reproduciendo
+            audioManager.stopAllAudio();
+            
+            // Redirigir después de un breve retraso
+            setTimeout(() => {
+                window.location.href = 'page_4.html';
+            }, 300);
+        });
+
+        // Botón de login (solo decorativo)
+        document.getElementById('loginButton').addEventListener('click', function() {
+            // Efecto de clic visual pero sin funcionalidad
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 200);
+            
+            // Simular inicio de sesión exitoso y redirigir
+            setTimeout(() => {
+                audioManager.stopAllAudio();
+                window.location.href = 'page_4.html';
+            }, 1000);
+        });
+
+        // Efectos de hover en los botones
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Efecto hover para botón de login BBVA
+        document.getElementById('loginButton').addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        document.getElementById('loginButton').addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+
+        // Prevenir envío del formulario
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>

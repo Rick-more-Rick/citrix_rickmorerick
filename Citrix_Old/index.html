@@ -30,13 +30,13 @@
 
         /* ===== CONTENEDOR PRINCIPAL - DISEÑO HORIZONTAL ===== */
         .container {
-            max-width: 1200px; /* Aumentado para abarcar más espacio */
+            max-width: 1200px;
             width: 100%;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 80px; /* Aumentado para más separación */
+            gap: 80px;
             align-items: center;
-            padding: 60px; /* Aumentado para más espacio interno */
+            padding: 60px;
             animation: slideInFromRight 0.8s ease-out forwards;
         }
 
@@ -52,6 +52,22 @@
             }
         }
 
+        /* ===== EFECTOS DE VOLTEO DE HOJA (AGREGADOS) ===== */
+        @keyframes slideOutToRight {
+            from { 
+                transform: translateX(0) rotateY(0deg);
+                opacity: 1;
+            }
+            to { 
+                transform: translateX(100vw) rotateY(15deg);
+                opacity: 0;
+            }
+        }
+
+        .page-exit-right {
+            animation: slideOutToRight 0.8s ease-in forwards;
+        }
+
         /* ===== PANEL IZQUIERDO - ANIMACIÓN LOTTIE ===== */
         .left-panel {
             display: flex;
@@ -59,10 +75,10 @@
             align-items: center;
         }
 
-        /* Contenedor de la animación Lottie - AUMENTADO DE TAMAÑO */
+        /* Contenedor de la animación Lottie */
         .lottie-container {
-            width: 450px; /* Aumentado de 300px a 450px */
-            height: 450px; /* Aumentado de 300px a 450px */
+            width: 450px;
+            height: 450px;
             border-radius: 20px;
             overflow: hidden;
             transform: translateZ(0);
@@ -73,7 +89,7 @@
             text-align: left;
             position: relative;
             overflow: hidden;
-            height: 500px; /* Altura fija para el carrusel */
+            height: 500px;
         }
 
         /* ===== SLIDES DEL CARRUSEL ===== */
@@ -101,27 +117,54 @@
             opacity: 0;
         }
 
+        /* Slide de URL Citrix - Inicialmente oculto a la derecha */
+        .slide.citrix-url {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
         /* Cuando el carrusel avanza a la segunda slide */
-        .carousel-advanced .slide.welcome {
+        .carousel-step-1 .slide.welcome {
             transform: translateX(-100%);
             opacity: 0;
         }
 
-        .carousel-advanced .slide.citrix-info {
+        .carousel-step-1 .slide.citrix-info {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .carousel-step-1 .slide.citrix-url {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        /* Cuando el carrusel avanza a la tercera slide */
+        .carousel-step-2 .slide.welcome {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .carousel-step-2 .slide.citrix-info {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .carousel-step-2 .slide.citrix-url {
             transform: translateX(0);
             opacity: 1;
         }
 
         /* ===== LOGO - TEXTO AUMENTADO ===== */
         .logo-container {
-            margin-bottom: 50px; /* Aumentado para más separación */
+            margin-bottom: 50px;
         }
 
         .logo-main {
-            font-size: 4.5rem; /* Aumentado de 3.5rem a 4.5rem */
+            font-size: 4.5rem;
             font-weight: 800;
             line-height: 1.1;
-            margin-bottom: 25px; /* Aumentado para más separación */
+            margin-bottom: 25px;
         }
 
         .logo-simulador {
@@ -162,32 +205,80 @@
             margin-bottom: 40px;
         }
 
+        /* ===== CONTENIDO DE URL CITRIX ===== */
+        .url-content {
+            text-align: left;
+        }
+
+        .url-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a2a6c;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .url-description {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .url-link {
+            font-size: 1.2rem;
+            color: #1a2a6c;
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            word-break: break-all;
+            margin-bottom: 40px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .url-link:hover {
+            background-color: #e9ecef;
+            border-color: #1a2a6c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(26, 42, 108, 0.2);
+        }
+
+        .url-link.copied {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
         /* ===== BOTÓN PRINCIPAL - COLOR VERDE CON TRIÁNGULO ===== */
         .btn-start {
             background: linear-gradient(135deg, #28a745, #20c997);
             border: none;
             color: white;
-            padding: 25px 60px; /* Aumentado para botón más grande */
-            font-size: 1.5rem; /* Aumentado de 1.3rem a 1.5rem */
+            padding: 25px 60px;
+            font-size: 1.5rem;
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.4s ease;
-            box-shadow: 
-                0 8px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
             position: relative;
             overflow: hidden;
             letter-spacing: 0.5px;
-            margin-bottom: 25px; /* Aumentado para más separación */
+            margin-bottom: 25px;
             width: 100%;
-            max-width: 350px; /* Aumentado para botón más ancho */
+            max-width: 350px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px; /* Aumentado para más separación entre icono y texto */
+            gap: 15px;
         }
 
-        /* Botón Continuar - AHORA VERDE COMO EL BOTÓN PRINCIPAL */
+        /* Botón Continuar - VERDE COMO EL BOTÓN PRINCIPAL */
         .btn-continue {
             background: linear-gradient(135deg, #28a745, #20c997);
             border: none;
@@ -198,8 +289,7 @@
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.4s ease;
-            box-shadow: 
-                0 8px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
             position: relative;
             overflow: hidden;
             letter-spacing: 0.5px;
@@ -228,17 +318,9 @@
             left: 100%;
         }
 
-        .btn-start:hover:not(:disabled) {
+        .btn-start:hover:not(:disabled), .btn-continue:hover:not(:disabled) {
             transform: translateY(-3px);
-            box-shadow: 
-                0 12px 30px rgba(40, 167, 69, 0.4);
-            background: linear-gradient(135deg, #34ce57, #28a745);
-        }
-
-        .btn-continue:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 
-                0 12px 30px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 12px 30px rgba(40, 167, 69, 0.4);
             background: linear-gradient(135deg, #34ce57, #28a745);
         }
 
@@ -246,13 +328,13 @@
             transform: translateY(-1px);
         }
 
-        /* Triángulo estilo YouTube - AUMENTADO DE TAMAÑO */
+        /* Triángulo estilo YouTube */
         .play-triangle {
             width: 0;
             height: 0;
-            border-left: 14px solid white; /* Aumentado de 12px a 14px */
-            border-top: 9px solid transparent; /* Aumentado de 8px a 9px */
-            border-bottom: 9px solid transparent; /* Aumentado de 8px a 9px */
+            border-left: 14px solid white;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
             margin-right: 5px;
         }
 
@@ -265,8 +347,7 @@
 
         .btn-start:disabled:hover, .btn-continue:disabled:hover {
             transform: none !important;
-            box-shadow: 
-                0 8px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
         }
 
         /* ===== INDICADORES DE AUDIO ===== */
@@ -328,7 +409,7 @@
 
         /* ===== TEXTO INFORMATIVO ===== */
         .info-text {
-            font-size: 1rem; /* Aumentado de 0.9rem a 1rem */
+            font-size: 1rem;
             color: #888888;
             line-height: 1.4;
         }
@@ -387,24 +468,29 @@
             }
             
             .logo-main {
-                font-size: 3.5rem; /* Aumentado de 3rem a 3.5rem */
+                font-size: 3.5rem;
             }
             
             .lottie-container {
-                width: 320px; /* Aumentado de 250px a 320px */
-                height: 320px; /* Aumentado de 250px a 320px */
+                width: 320px;
+                height: 320px;
             }
             
             .btn-start, .btn-continue {
                 margin: 0 auto 20px;
             }
             
-            .citrix-title {
+            .citrix-title, .url-title {
                 font-size: 2rem;
             }
             
-            .citrix-description {
+            .citrix-description, .url-description {
                 font-size: 1.1rem;
+            }
+            
+            .url-link {
+                font-size: 1rem;
+                padding: 12px 15px;
             }
         }
 
@@ -415,18 +501,18 @@
             }
             
             .logo-main {
-                font-size: 3rem; /* Aumentado de 2.5rem a 3rem */
+                font-size: 3rem;
             }
             
             .lottie-container {
-                width: 280px; /* Aumentado de 200px a 280px */
-                height: 280px; /* Aumentado de 200px a 280px */
+                width: 280px;
+                height: 280px;
             }
             
             .btn-start, .btn-continue {
-                padding: 20px 45px; /* Aumentado para mantener proporción */
-                font-size: 1.3rem; /* Aumentado de 1.1rem a 1.3rem */
-                max-width: 300px; /* Aumentado de 280px a 300px */
+                padding: 20px 45px;
+                font-size: 1.3rem;
+                max-width: 300px;
             }
             
             .play-button {
@@ -444,17 +530,22 @@
             }
             
             .play-triangle {
-                border-left: 12px solid white; /* Aumentado de 10px a 12px */
-                border-top: 7px solid transparent; /* Aumentado de 6px a 7px */
-                border-bottom: 7px solid transparent; /* Aumentado de 6px a 7px */
+                border-left: 12px solid white;
+                border-top: 7px solid transparent;
+                border-bottom: 7px solid transparent;
             }
             
-            .citrix-title {
+            .citrix-title, .url-title {
                 font-size: 1.8rem;
             }
             
-            .citrix-description {
+            .citrix-description, .url-description {
                 font-size: 1rem;
+            }
+            
+            .url-link {
+                font-size: 0.9rem;
+                padding: 10px 12px;
             }
         }
     </style>
@@ -473,6 +564,9 @@
         </audio>
         <audio id="audioPage1" preload="auto">
             <source src="./mp3/page1_bienvenida.mp3" type="audio/mp3">
+        </audio>
+        <audio id="audioPage2" preload="auto">
+            <source src="./mp3/page2_bienvenida.mp3" type="audio/mp3">
         </audio>
     </div>
 
@@ -523,11 +617,30 @@
                         Los asesores accederán a las herramientas necesarias para realizar sus tareas desde su lugar de trabajo.
                     </p>
                     
-                    <!-- Botón para continuar - AHORA VERDE -->
+                    <!-- Botón para continuar - VERDE -->
                     <button class="btn-continue" id="continueButton" disabled>
                         <div class="play-triangle"></div>
                         Continuar
                     </button>
+                </div>
+            </div>
+
+            <!-- Slide 3: URL de Citrix -->
+            <div class="slide citrix-url">
+                <div class="url-content">
+                    <h1 class="url-title">Acceso a Citrix</h1>
+                    <p class="url-description">
+                        Para acceder a la plataforma Citrix, utiliza la siguiente URL oficial:
+                    </p>
+                    
+                    <!-- Enlace que navega a page_3.html -->
+                    <a href="./page_3.html" 
+                       class="url-link" 
+                       id="citrixUrl">
+                        https://ctxwkpmxp.mex.igrupobbva/logon/LogonPoint/tmindex.html
+                    </a>
+                    
+                    <p class="info-text">Haz clic en la URL para continuar con el simulador</p>
                 </div>
             </div>
         </div>
@@ -540,7 +653,8 @@
                 // Elementos de audio
                 this.audioElements = {
                     welcome: document.getElementById('audioWelcome'),
-                    page1: document.getElementById('audioPage1')
+                    page1: document.getElementById('audioPage1'),
+                    page2: document.getElementById('audioPage2')
                 };
                 
                 // Elementos de la interfaz
@@ -549,17 +663,19 @@
                 this.continueButton = document.getElementById('continueButton');
                 this.playButton = document.getElementById('playButton');
                 this.rightPanel = document.getElementById('rightPanel');
+                this.citrixUrl = document.getElementById('citrixUrl');
                 
                 // Estado del audio y carrusel
                 this.currentAudio = null;
                 this.isPlaying = false;
                 this.audioEnabled = false;
-                this.carouselAdvanced = false;
+                this.carouselStep = 0; // 0: welcome, 1: citrix-info, 2: citrix-url
                 
                 // Configurar eventos
                 this.setupAudioEvents();
                 this.setupActivationButton();
                 this.setupCarouselEvents();
+                this.setupUrlNavigation();
             }
 
             // ===== CONFIGURACIÓN DE EVENTOS DE AUDIO =====
@@ -588,24 +704,37 @@
                     this.enableContinueButton();
                 });
                 
-                this.audioElements.welcome.addEventListener('error', (e) => {
-                    console.log('Error de audio:', e);
+                // Configurar eventos para el audio de página 2
+                this.audioElements.page2.addEventListener('play', () => {
+                    this.isPlaying = true;
+                    this.showAudioIndicator();
+                });
+                
+                this.audioElements.page2.addEventListener('ended', () => {
                     this.isPlaying = false;
                     this.hideAudioIndicator();
-                    // Habilitar botón incluso si hay error en el audio
-                    setTimeout(() => {
-                        this.enableStartButton();
-                    }, 1000);
+                    // No habilitamos botón aquí porque ya no existe
+                });
+                
+                // Manejo de errores de audio
+                this.audioElements.welcome.addEventListener('error', (e) => {
+                    console.log('Error en audio de bienvenida:', e);
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
+                    setTimeout(() => this.enableStartButton(), 1000);
                 });
                 
                 this.audioElements.page1.addEventListener('error', (e) => {
-                    console.log('Error de audio página 1:', e);
+                    console.log('Error en audio de página 1:', e);
                     this.isPlaying = false;
                     this.hideAudioIndicator();
-                    // Habilitar botón incluso si hay error en el audio
-                    setTimeout(() => {
-                        this.enableContinueButton();
-                    }, 1000);
+                    setTimeout(() => this.enableContinueButton(), 1000);
+                });
+                
+                this.audioElements.page2.addEventListener('error', (e) => {
+                    console.log('Error en audio de página 2:', e);
+                    this.isPlaying = false;
+                    this.hideAudioIndicator();
                 });
             }
 
@@ -621,29 +750,40 @@
                 // Evento para el botón de comenzar curso
                 this.startButton.addEventListener('click', () => {
                     if (this.startButton.disabled) return;
-                    
-                    // Efecto de clic
                     this.startButton.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         this.startButton.style.transform = '';
                     }, 150);
-                    
-                    // Avanzar carrusel y reproducir audio de página 1
-                    this.advanceCarousel();
+                    this.advanceToStep1();
                 });
                 
                 // Evento para el botón de continuar
                 this.continueButton.addEventListener('click', () => {
                     if (this.continueButton.disabled) return;
-                    
-                    // Efecto de clic
                     this.continueButton.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         this.continueButton.style.transform = '';
                     }, 150);
+                    this.advanceToStep2();
+                });
+            }
+
+            // ===== CONFIGURACIÓN DE NAVEGACIÓN POR URL =====
+            setupUrlNavigation() {
+                // Agregar efecto de clic en la URL
+                this.citrixUrl.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevenir navegación inmediata
                     
-                    // Navegar a la siguiente página
-                    this.goToNextPage();
+                    // Efecto visual de clic
+                    this.citrixUrl.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.citrixUrl.style.transform = '';
+                    }, 150);
+                    
+                    console.log('Navegando a page_3.html con efecto...');
+                    
+                    // Navegar con efecto de voltear hoja
+                    this.navigateWithSlideEffect('page_3.html');
                 });
             }
 
@@ -654,10 +794,7 @@
                     this.playButton.textContent = '🎵 Audio Activado';
                     this.playButton.classList.add('activated');
                     this.playButton.disabled = true;
-                    
-                    // Reproducir audio de bienvenida inmediatamente
                     this.playWelcomeAudio();
-                    
                     console.log('Audio activado - Página 1');
                 }
             }
@@ -666,27 +803,20 @@
             playWelcomeAudio() {
                 if (this.audioElements.welcome && this.audioEnabled) {
                     this.audioElements.welcome.play().catch(e => {
-                        console.log('Error en audio de bienvenida:', e);
-                        // Habilitar botón incluso si hay error
-                        setTimeout(() => {
-                            this.enableStartButton();
-                        }, 1000);
+                        console.log('Error al reproducir audio de bienvenida:', e);
+                        setTimeout(() => this.enableStartButton(), 1000);
                     });
                 } else {
-                    // Si no hay audio, habilitar botón después de un tiempo
-                    setTimeout(() => {
-                        this.enableStartButton();
-                    }, 2000);
+                    setTimeout(() => this.enableStartButton(), 2000);
                 }
             }
 
-            // ===== AVANCE DEL CARRUSEL =====
-            advanceCarousel() {
-                if (!this.carouselAdvanced) {
-                    this.carouselAdvanced = true;
-                    
-                    // Aplicar clase para animar el carrusel
-                    this.rightPanel.classList.add('carousel-advanced');
+            // ===== AVANCE A STEP 1 (INFORMACIÓN CITRIX) =====
+            advanceToStep1() {
+                if (this.carouselStep === 0) {
+                    this.carouselStep = 1;
+                    this.rightPanel.classList.remove('carousel-step-2');
+                    this.rightPanel.classList.add('carousel-step-1');
                     
                     // Reproducir audio de página 1 después de un breve delay
                     setTimeout(() => {
@@ -701,51 +831,85 @@
             playPage1Audio() {
                 if (this.audioElements.page1) {
                     this.audioElements.page1.play().catch(e => {
-                        console.log('Error en audio de página 1:', e);
-                        // Habilitar botón de continuar incluso si hay error
-                        setTimeout(() => {
-                            this.enableContinueButton();
-                        }, 1000);
+                        console.log('Error al reproducir audio de página 1:', e);
+                        setTimeout(() => this.enableContinueButton(), 1000);
                     });
                 } else {
-                    // Si no hay audio, habilitar botón después de un tiempo
-                    setTimeout(() => {
-                        this.enableContinueButton();
-                    }, 2000);
+                    setTimeout(() => this.enableContinueButton(), 2000);
                 }
             }
 
-            // ===== HABILITAR BOTÓN DE INICIO =====
+            // ===== AVANCE A STEP 2 (URL CITRIX) =====
+            advanceToStep2() {
+                if (this.carouselStep === 1) {
+                    this.carouselStep = 2;
+                    this.rightPanel.classList.remove('carousel-step-1');
+                    this.rightPanel.classList.add('carousel-step-2');
+                    
+                    // Reproducir audio de página 2 después de un breve delay
+                    setTimeout(() => {
+                        this.playPage2Audio();
+                    }, 800);
+                    
+                    console.log('Carrusel avanzado a URL Citrix');
+                }
+            }
+
+            // ===== REPRODUCCIÓN DEL AUDIO DE PÁGINA 2 =====
+            playPage2Audio() {
+                if (this.audioElements.page2) {
+                    this.audioElements.page2.play().catch(e => {
+                        console.log('Error al reproducir audio de página 2:', e);
+                    });
+                }
+            }
+
+            // ===== NAVEGACIÓN CON EFECTO DE VOLTEO (AGREGADA) =====
+            navigateWithSlideEffect(targetUrl) {
+                const container = document.querySelector('.container');
+                
+                // Detener audio si está reproduciendo
+                this.stopAllAudio();
+                
+                // Aplicar animación de salida (efecto voltear hoja)
+                container.classList.add('page-exit-right');
+                
+                // Prevenir múltiples clics durante la transición
+                document.querySelectorAll('.btn').forEach(btn => {
+                    btn.style.pointerEvents = 'none';
+                });
+                this.citrixUrl.style.pointerEvents = 'none';
+                
+                // Redirigir después de la animación
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 800);
+            }
+
+            // ===== HABILITAR BOTONES =====
             enableStartButton() {
                 if (this.startButton) {
                     this.startButton.disabled = false;
                     this.startButton.classList.add('enabled');
-                    
-                    // Efecto visual adicional
-                    setTimeout(() => {
-                        this.startButton.classList.remove('enabled');
-                    }, 600);
+                    setTimeout(() => this.startButton.classList.remove('enabled'), 600);
                 }
             }
 
-            // ===== HABILITAR BOTÓN DE CONTINUAR =====
             enableContinueButton() {
                 if (this.continueButton) {
                     this.continueButton.disabled = false;
                     this.continueButton.classList.add('enabled');
-                    
-                    // Efecto visual adicional
-                    setTimeout(() => {
-                        this.continueButton.classList.remove('enabled');
-                    }, 600);
+                    setTimeout(() => this.continueButton.classList.remove('enabled'), 600);
                 }
             }
 
             // ===== DETENER TODO EL AUDIO =====
             stopAllAudio() {
                 Object.values(this.audioElements).forEach(audio => {
-                    audio.pause();
-                    audio.currentTime = 0;
+                    if (audio) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }
                 });
                 this.isPlaying = false;
                 this.hideAudioIndicator();
@@ -764,69 +928,38 @@
                     this.audioIndicator.classList.remove('playing');
                 }
             }
-
-            // ===== NAVEGACIÓN A LA SIGUIENTE PÁGINA =====
-            goToNextPage() {
-                const container = document.querySelector('.container');
-                
-                // Detener audio si está reproduciendo
-                this.stopAllAudio();
-                
-                // Aplicar animación de salida
-                container.style.animation = 'slideInFromRight 0.6s ease-in reverse forwards';
-                
-                // Deshabilitar interacción durante la transición
-                this.continueButton.style.pointerEvents = 'none';
-                
-                // Redirigir después de la animación
-                setTimeout(() => {
-                    window.location.href = 'page_1.html';
-                }, 600);
-            }
         }
 
         // ===== INICIALIZACIÓN CUANDO EL DOCUMENTO ESTÁ LISTO =====
         document.addEventListener('DOMContentLoaded', function() {
             // Configurar efectos de hover en los botones
-            const startButton = document.getElementById('startButton');
-            const continueButton = document.getElementById('continueButton');
+            const buttons = ['startButton', 'continueButton'];
             
-            // Efectos de hover en el botón de comenzar
-            if (startButton) {
-                startButton.addEventListener('mouseenter', function() {
-                    if (!this.disabled) {
-                        this.style.transform = 'translateY(-2px)';
-                    }
-                });
-                
-                startButton.addEventListener('mouseleave', function() {
-                    if (!this.disabled) {
-                        this.style.transform = 'translateY(0)';
-                    }
-                });
-            }
-            
-            // Efectos de hover en el botón de continuar
-            if (continueButton) {
-                continueButton.addEventListener('mouseenter', function() {
-                    if (!this.disabled) {
-                        this.style.transform = 'translateY(-2px)';
-                    }
-                });
-                
-                continueButton.addEventListener('mouseleave', function() {
-                    if (!this.disabled) {
-                        this.style.transform = 'translateY(0)';
-                    }
-                });
-            }
+            buttons.forEach(buttonId => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.addEventListener('mouseenter', function() {
+                        if (!this.disabled) {
+                            this.style.transform = 'translateY(-2px)';
+                        }
+                    });
+                    
+                    button.addEventListener('mouseleave', function() {
+                        if (!this.disabled) {
+                            this.style.transform = 'translateY(0)';
+                        }
+                    });
+                }
+            });
         });
 
         // ===== CONTROL PARA PAUSAR AUDIO CON TECLA ESPACIO =====
         document.addEventListener('keydown', function(event) {
             if (event.code === 'Space') {
                 event.preventDefault();
-                audioManager.stopAllAudio();
+                if (audioManager) {
+                    audioManager.stopAllAudio();
+                }
             }
         });
 

@@ -9,18 +9,18 @@ def generate_better_audio():
     
     # Textos optimizados para mejor pronunciación
     audio_texts = {
-        'welcome_Simulador': 'Simulador Citrix.' ,
+        #'welcome_Simulador': 'Simulador Citrix.' ,
         #'feature_contenido': 'Contenido Completo',
         #'feature_simulaciones': 'Simulaciones Interactivas', 
         #'feature_certificacion': 'Certificación',
         #'boton_curso': 'Comenzar Curso',
         #'confirmacion': 'Iniciando curso Citrix'
         #******************************************************************#
-        #'page1_bienvenida': 'Plataforma de Acceso Seguro. Citrix es una plataforma que proporciona a los asesores del Contact Center, un Acceso Seguro y Unificado a aplicaciones, escritorios, y datos desde su PC en su posición de trabajo. Herramientas Centralizadas. Los asesores accederán a las herramientas necesarias, para realizar sus tareas desde su lugar de trabajo, garantizando seguridad, eficiencia y productividad en todas sus operaciones.',
+        #'page1_bienvenida': '¿Que es citrix?. Es una plataforma que proporciona a los asesores del Contact Center, un Acceso Seguro y Unificado a aplicaciones, escritorios, y datos desde su PC en su posición de trabajo. Los asesores accederán a las herramientas necesarias, para realizar sus tareas desde su lugar de trabajo.',
         #'boton_siguiente': 'Siguiente',
         #'boton_atras': 'Atras'
         #******************************************************************#
-        #'page2_bienvenida' : 'Acceso a la Plataforma. Para acceder a la plataforma Citrix, ingresa a la siguiente liga oficial:'
+        #'page2_bienvenida' : 'Ingresa a la siguiente liga oficial:'
         #******************************************************************#
         #'page3_bienvenida' : 'Acceso BBVA. Una vez dentro de la aplicacion, ingresaremos nuestros datos correspondientes, para acceder al contenido. Sigue las instrucciones que te muestra la imagen.'
         #******************************************************************#
@@ -28,7 +28,7 @@ def generate_better_audio():
         #******************************************************************#
         #'page5_bienvenida' : 'Aplicaciones:. Para acceder, unicamente deberas dar doble clic al aplicativo que se requiera.'
         #******************************************************************#
-        #'page6_bienvenida' : 'Ventana de Aplicación. Aplicación Abierta. Has abierto correctamente la aplicación en una nueva ventana. Ahora puedes trabajar de manera segura en la plataforma Citrix.'
+        'page6_bienvenida' : 'Al ingresar a cada aplicación, mostrara un círculo de carga, después mostrará un mensaje de alerta el cual indica que ha encontrado los recursos necesarios, y comenzará con la apertura del aplicativo. Clic en el icono de engranaje'
         #******************************************************************#
         #'page6_bienvenida' : 'Cierre de Sesión',
         #'page6_para' : 'Para cerrar sesión correctamente:. Haz clic en el engrane y selecciona Cerrar Sesión.',
