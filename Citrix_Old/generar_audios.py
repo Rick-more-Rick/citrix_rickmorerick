@@ -28,11 +28,11 @@ def generate_better_audio():
         #******************************************************************#
         #'page5_bienvenida' : 'Aplicaciones:. Para acceder, unicamente deberas dar doble clic al aplicativo que se requiera.'
         #******************************************************************#
-        'page6_bienvenida' : 'Al ingresar a cada aplicación, mostrara un círculo de carga, después mostrará un mensaje de alerta el cual indica que ha encontrado los recursos necesarios, y comenzará con la apertura del aplicativo. Clic en el icono de engranaje'
+        #'page6_bienvenida' : 'Al ingresar a cada aplicación, mostrara un círculo de carga, después mostrará un mensaje de alerta el cual indica que ha encontrado los recursos necesarios, y comenzará con la apertura del aplicativo. Clic en el icono de engranaje'
         #******************************************************************#
         #'page6_bienvenida' : 'Cierre de Sesión',
         #'page6_para' : 'Para cerrar sesión correctamente:. Haz clic en el engrane y selecciona Cerrar Sesión.',
-        #'page6_recuerda' : 'Recuerda siempre, al término de tu jornada o descansos espaciosos, debes cerrar correctamente el aplicativo. Clic en *cerrar sesión*.'
+        'page6_recuerda' : 'Recuerda siempre, al término de tu jornada o descansos espaciosos, debes cerrar correctamente el aplicativo. Clic en *cerrar sesión*.'
         #******************************************************************#
         #******************************************************************#
     }

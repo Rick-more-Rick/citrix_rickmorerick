@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BBVA - Guía (Carrusel)</title>
+    <title>BBVA - Guía (Carrusel Extendido)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <style>
@@ -18,13 +18,11 @@
             background-color: white;
             color: #333;
             min-height: 100vh;
-            /* AÑADIDO: Oculta la barra de desplazamiento horizontal del carrusel */
             overflow-x: hidden; 
         }
 
-        /* [Estilos de Barra Superior y Contenido Omitidos por brevedad, son los mismos] */
-
-        /* --- Estilos de la Burbuja Informativa (NUEVOS) --- */
+        /* [Estilos de Barra Superior y Burbuja Informativa Omitidos por brevedad, son los mismos] */
+        /* --- Estilos de la Burbuja Informativa (Mismos) --- */
         .info-bubble-container {
             position: fixed;
             bottom: 20px;
@@ -33,7 +31,7 @@
             align-items: flex-end;
             max-width: 550px;
             z-index: 100;
-            opacity: 0; /* Oculto al inicio, se muestra al activar el audio */
+            opacity: 0; 
             transition: opacity 0.5s ease;
         }
 
@@ -46,15 +44,15 @@
             width: 150px;
             height: 150px;
             flex-shrink: 0;
-            margin-right: -30px; /* Superponer ligeramente la burbuja */
-            margin-bottom: -15px; /* Ajuste visual */
+            margin-right: -30px; 
+            margin-bottom: -15px; 
         }
         
         /* Burbuja de Texto */
         .info-bubble {
-            background-color: #a4c9f7; /* Azul claro para el fondo de la burbuja */
-            color: #004481; /* Texto en azul oscuro */
-            padding: 20px 25px 20px 60px; /* Padding extra a la izquierda para el personaje */
+            background-color: #a4c9f7;
+            color: #004481;
+            padding: 20px 25px 20px 60px;
             border-radius: 20px;
             position: relative;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -66,7 +64,6 @@
             line-height: 1.4;
         }
 
-        /* Simulación del círculo "i" (Información) - Se usará un icono simple */
         .info-bubble::after {
             content: 'i';
             position: absolute;
@@ -75,7 +72,7 @@
             transform: translateY(-50%);
             width: 35px;
             height: 35px;
-            background-color: #ffda6a; /* Amarillo */
+            background-color: #ffda6a;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -84,141 +81,39 @@
             font-size: 1.3rem;
             color: #004481;
         }
-        
-        /* Estilos de Barra Superior y Contenido Omitidos por brevedad, son los mismos que antes */
-        .header-main {
-            display: flex;
-            align-items: stretch;
-            height: 60px;
-            background-color: #004481; 
-        }
-        .logo-container {
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-            background-color: #004481;
-            color: white;
-            font-size: 1.8rem;
-            font-weight: bold;
-            width: 150px; 
-            flex-shrink: 0; 
-        }
-        .utility-icons {
-            display: flex;
-            align-items: center;
-            background-color: #004481;
-            padding: 0 20px;
-            color: white;
-            gap: 20px;
-            width: 150px; 
-            justify-content: flex-end;
-            flex-shrink: 0; 
-        }
-        .utility-icon {
-            font-size: 1.2rem;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-        .nav-tabs {
-            display: flex;
-            align-items: stretch;
-            justify-content: center;
-            flex-grow: 1;
-            background-color: #004481;
-        }
-        .nav-tab {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0 25px;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            position: relative;
-        }
-        .nav-tab.active {
-            background-color: #3b82f6;
-        }
-        .nav-tab-icon {
-            font-size: 1.2rem;
-            margin-bottom: 3px;
-        }
-        .nav-tab.disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        /*.content-container {
-            /* ESTILO OBSOLETO: Se usará #main-stage */
-            /* padding: 30px 40px; */
-            /* background-color: white; */
-        /*} */
-        .welcome-title {
-            font-size: 1.8rem;
-            font-weight: 400;
-            color: #333;
-            margin-bottom: 50px;
-        }
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 50px 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .star-icon {
-            font-size: 3.5rem;
-            color: #ccc;
-            margin-bottom: 25px;
-            opacity: 0.7;
-        }
-        .empty-text {
-            color: #666;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-        #audio-button-container {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            z-index: 1000;
-        }
-        #activate-audio {
-            background-color: #004481;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.3s;
-        }
-        #activate-audio:hover {
-            background-color: #3b82f6;
-        }
+
+        /* Estilos de Barra Superior (Mismos) */
+        .header-main { display: flex; align-items: stretch; height: 60px; background-color: #004481; }
+        .logo-container { display: flex; align-items: center; padding: 0 30px; background-color: #004481; color: white; font-size: 1.8rem; font-weight: bold; width: 150px; flex-shrink: 0; }
+        .utility-icons { display: flex; align-items: center; background-color: #004481; padding: 0 20px; color: white; gap: 20px; width: 150px; justify-content: flex-end; flex-shrink: 0; }
+        .utility-icon { font-size: 1.2rem; cursor: pointer; opacity: 0.8; transition: opacity 0.2s; }
+        .nav-tabs { display: flex; align-items: stretch; justify-content: center; flex-grow: 1; background-color: #004481; }
+        .nav-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 25px; color: white; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: background-color 0.2s; position: relative; }
+        .nav-tab.active { background-color: #3b82f6; }
+        .nav-tab-icon { font-size: 1.2rem; margin-bottom: 3px; }
+        .nav-tab.disabled { cursor: not-allowed; opacity: 0.6; pointer-events: none; }
+
+        /* ESTILOS DE CONTENIDO (Mismos) */
+        .welcome-title { font-size: 1.8rem; font-weight: 400; color: #333; margin-bottom: 50px; }
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 50px 20px; max-width: 600px; margin: 0 auto; }
+        .star-icon { font-size: 3.5rem; color: #ccc; margin-bottom: 25px; opacity: 0.7; }
+        .empty-text { color: #666; font-size: 1rem; line-height: 1.6; }
+        #audio-button-container { position: fixed; top: 70px; right: 20px; z-index: 1000; }
+        #activate-audio { background-color: #004481; color: white; border: none; padding: 10px 15px; border-radius: 5px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s; }
+        #activate-audio:hover { background-color: #3b82f6; }
 
         /* --- AÑADIDOS DE ESTILOS DE CARRUSEL Y APLICACIONES --- */
         #main-stage {
+            /* CAMBIO CLAVE: 3 secciones de 100% cada una */
             display: flex;
-            width: 200vw; /* Dos secciones de 100% cada una */
-            transition: transform 0.5s ease-in-out; /* Animación de carrusel */
+            width: 300vw; 
+            transition: transform 0.5s ease-in-out; 
         }
         .page-section {
             width: 100vw;
             flex-shrink: 0;
             padding: 30px 40px;
-            min-height: calc(100vh - 60px); /* Altura total - altura del navbar */
+            min-height: calc(100vh - 60px); 
         }
         #page-aplicaciones {
             padding-top: 20px;
@@ -300,6 +195,93 @@
             font-size: 0.7rem;
             color: #999;
         }
+
+        /* --- Estilos para la NUEVA PÁGINA (Página 3 - Apertura de App) --- */
+        #page-app-open {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #f7f9fc; /* Fondo claro diferente */
+        }
+
+        /* Estilo para el lottie grande */
+        #page-app-open lottie-player {
+            width: 300px;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+
+        #page-app-open h2 {
+            font-size: 2.2rem;
+            color: #004481;
+            margin-bottom: 10px;
+        }
+        
+        #page-app-open p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin-top: 15px;
+        }
+        /* ESTILOS PARA MENU ENGRANE*/
+        /* --- AÑADIDOS PARA EL MENÚ DE AJUSTES (ENGRANAJE) --- */
+        .utility-icon { 
+            /* ... (mantener estilos existentes) ... */
+            position: relative; /* Para el menú desplegable */
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 55px; /* Debajo de la barra de navegación */
+            right: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 250px;
+            z-index: 1000;
+            display: none; /* Inicia oculto */
+        }
+
+        .settings-menu.active {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            color: #333;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item:hover {
+            background-color: #f7f7f7;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .menu-item.logout {
+            color: #e53935; /* Color rojo para cerrar sesión */
+            font-weight: 600;
+        }
+
+        /* ESTILOS PARA BLOQUEO DE CERRAR SESIÓN */
+        .menu-item.logout.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none; /* Bloquea el clic */
+        }
     </style>
 </head>
 <body>
@@ -320,11 +302,34 @@
                 <span>APLICACIONES</span>
             </div>
         </nav>
+        <!--********************************-->
+        <!-- CONTENIDO DE MENU DE ENGRANE-->
+        <!--********************************-->
 
         <div class="utility-icons">
             <i class="fas fa-search utility-icon"></i>
-            <i class="fas fa-cog utility-icon"></i>
+            <i class="fas fa-cog utility-icon" id="settings-icon"></i> 
+
+            <div class="settings-menu" id="settings-menu">
+                <div class="menu-item">
+                    <i class="fas fa-user-circle"></i> 
+                    <span>Nombre y apellido</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-sliders-h"></i> 
+                    <span>Parámetros de la cuenta</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-info-circle"></i> 
+                    <span>Acerca de</span>
+                </div>
+                <div class="menu-item logout locked" id="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> 
+                    <span>CERRAR SESION</span>
+                </div>
+            </div>
         </div>
+        <!--********************************-->
 
     </header>
 
@@ -334,9 +339,12 @@
             <span>Activar Audio Guía</span>
         </button>
     </div>
-
+    <!--*************************************-->
     <audio id="audio-inicio" src="./mp3/page4_bienvenida.mp3" preload="auto"></audio>
     <audio id="audio-aplicaciones" src="./mp3/page5_bienvenida.mp3" preload="auto"></audio>
+    <audio id="audio-app-open" src="./mp3/page6_bienvenida.mp3" preload="auto"></audio>
+    <audio id="audio-page6-recuerda" src="./mp3/page6_recuerda.mp3" preload="auto"></audio>
+    <!--*************************************-->
 
     <main id="main-stage">
         
@@ -373,6 +381,25 @@
                 </div>
         </section>
 
+        <section class="page-section" id="page-app-open">
+            <lottie-player 
+                id="open-window-lottie"
+                src="./lotties/open_window.json" 
+                background="transparent" 	
+                speed="1" 	
+                loop 
+                autoplay 
+                style="width: 300px; height: 300px;"
+            ></lottie-player>
+
+            <h2 id="opened-app-title"></h2>
+
+            <p>
+                Esta es la simulación de la apertura de la aplicación. En este punto la guía de audio
+                te dará los pasos a seguir dentro de esta nueva ventana.
+            </p>
+        </section>
+
     </main>
 
 
@@ -380,8 +407,8 @@
         <lottie-player 
             id="teacher-lottie"
             src="./lotties/teacher.json" 
-            background="transparent"  
-            speed="1"  
+            background="transparent" 	
+            speed="1" 	
             loop 
             autoplay 
             style="width: 150px; height: 150px;"
@@ -391,11 +418,10 @@
             <span id="typewriter-text"></span>
         </div>
     </div>
-
+    <!--*****************-->
     <script>
-        // --- AÑADIDOS DE DATOS Y FUNCIONES ---
-        
-        // SVG del logo de Chrome
+        //
+        // --- DATOS GLOBALES ---
         const CHROME_SVG = `
             <svg class="chrome-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <path fill="#4285F4" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"/>
@@ -411,13 +437,32 @@
             "Cyber 9 vía 3", "Cyber 9 vía 4", "FUD", "Future Space", "ietablehelper", 
             "Lynx Firefox", "PU - Emulación 3270", "Tipificador SDAT WAS 6", "Tipificador SDAT WAS 8"
         ];
-        
+
+        // --- VARIABLES DE ESTADO Y TEXTOS ---
+        let audioActivated = false;
+        let currentAudio; 
+        let currentText;
+        let currentInterval; 
+        // NUEVA VARIABLE: Controla si el ícono de engranaje (Ajustes) puede usarse como parte de la guía.
+        let settingsMenuEnabled = false; 
+
+        const TEXT_INICIO = "Dashboard principal.\nClic en 'aplicaciones' para visualizar todas las ligas de acceso que tienes permitidas.";
+        const TEXT_APLICACIONES = "Aplicaciones.\nPara acceder únicamente deberás dar doble clic al aplicativo que se requiera.";
+        const TEXT_APP_OPEN_GUIDE = "Al ingresar a cada aplicación, mostrara un círculo de carga, después mostrará un mensaje de alerta el cual indica que ha encontrado los recursos necesarios, y comenzará con la apertura del aplicativo. ¡Clic en el icono de engranaje'!";
+        // NUEVO TEXTO: Guía para el audio de 'Recuerda'
+        const TEXT_AJUSTES_RECUERDA = "Recuerde, la guía le indica el momento oportuno para realizar la acción. Preste atención a la siguiente indicación, solo entonces podrá hacer clic en 'Cerrar Sesión'.";
+
+        // Referencias a elementos DOM (Declaradas globalmente, inicializadas en DOMContentLoaded)
+        let audioInicio, audioAplicaciones, audioAppOpen, audioPage6Recuerda; // Audio adicional
+        let audioButton, inicioTab, aplicacionesTab, mainStage, teacherLottie, openWindowLottie, textElement, bubbleContainer, openedAppTitle;
+        let settingsIcon, settingsMenu, logoutButton; // Elementos del menú de Ajustes
+
         // Función para generar las tarjetas de aplicación
-        function generateAppCards(nextPageUrl) {
+        function generateAppCards() {
             const grid = document.querySelector('.app-grid');
             if (!grid) return;
             grid.innerHTML = APP_NAMES.map(name => `
-                <div class="app-card" data-app-name="${name.replace(/\s/g, '_')}">
+                <div class="app-card" data-app-name="${name}">
                     <i class="far fa-star"></i>
                     <div class="app-icon">
                         ${CHROME_SVG}
@@ -427,133 +472,258 @@
                 </div>
             `).join('');
 
-            // **NUEVO: Agregar el evento de doble clic a todas las tarjetas**
             document.querySelectorAll('.app-card').forEach(card => {
                 card.addEventListener('dblclick', () => {
-                    window.location.href = nextPageUrl;
+                    const appName = card.dataset.appName;
+                    if (audioActivated) {
+                        goToAppOpenScene(appName);
+                    } else {
+                        console.log(`Doble clic en ${appName}. Abriendo app de forma normal.`);
+                    }
                 });
             });
         }
         
-        // --- FIN DE AÑADIDOS DE DATOS Y FUNCIONES ---
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Inicializar tarjetas con la siguiente URL de la guía
-            generateAppCards('page_6.html'); 
+        // Función del efecto de máquina de escribir
+        function typeWriterEffect(text, duration) {
+            textElement.textContent = '';
+            clearInterval(currentInterval);
             
-            // **IMPORTANTE: Referenciar ambos audios**
-            const audioInicio = document.getElementById('audio-inicio');
-            const audioAplicaciones = document.getElementById('audio-aplicaciones');
-            let currentAudio = audioInicio; // El audio inicial es el de la bienvenida (page4)
+            const totalChars = text.length;
+            const interval = duration / totalChars; 
+            let charIndex = 0;
             
-            const audioButton = document.getElementById('activate-audio');
-            const inicioTab = document.getElementById('inicio-tab'); 
-            const aplicacionesTab = document.getElementById('aplicaciones-tab');
-            const mainStage = document.getElementById('main-stage'); 
-            const lottiePlayer = document.getElementById('teacher-lottie');
-            const textElement = document.getElementById('typewriter-text');
-            const bubbleContainer = document.getElementById('info-bubble-container');
-            
-            // Textos para cada escena
-            const TEXT_INICIO = "Dashboard principal.\nClic en 'aplicaciones' para visualizar todas las ligas de acceso que tienes permitidas.";
-            const TEXT_APLICACIONES = "Aplicaciones.\nPara acceder únicamente deberás dar doble clic al aplicativo que se requiera.";
-            
-            let currentText = TEXT_INICIO;
-            let audioActivated = false;
-            let currentInterval; 
-
-            // Función del efecto de máquina de escribir
-            function typeWriterEffect(text, duration) {
-                textElement.textContent = '';
-                clearInterval(currentInterval);
-                
-                const totalChars = text.length;
-                // La duración se calcula a partir del audio que se está reproduciendo
-                const interval = duration / totalChars; 
-                let charIndex = 0;
-                
-                currentInterval = setInterval(() => {
-                    if (charIndex < totalChars) {
-                        const char = text.charAt(charIndex);
-                        if (char === '\n') {
-                            // Reemplazar el \n por <br> para salto de línea en HTML
-                            textElement.innerHTML = textElement.innerHTML.slice(0, -1) + '<br>'; 
-                        } else {
-                            textElement.textContent += char;
-                        }
-                        charIndex++;
+            currentInterval = setInterval(() => {
+                if (charIndex < totalChars) {
+                    const char = text.charAt(charIndex);
+                    if (char === '\n') {
+                        textElement.innerHTML += '<br>'; 
                     } else {
-                        clearInterval(currentInterval);
+                        textElement.innerHTML += char; 
                     }
-                }, interval);
+                    charIndex++;
+                } else {
+                    clearInterval(currentInterval);
+                }
+            }, interval);
+        }
+        
+        // Función para detener y restablecer el audio al cambiar de escena
+        function stopCurrentAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio.onended = null; // Limpiar el handler onended es CRUCIAL
+            }
+        }
+
+        /**
+         * Función principal para cambiar de escena y gestionar el audio/bloqueo.
+         * @param {number} sceneIndex - 0: Inicio, 1: Aplicaciones, 2: App Abierta
+         */
+        function goToScene(sceneIndex, newText, newAudio, newAppTitle = null) {
+            
+            teacherLottie.style.display = 'block'; 
+            openWindowLottie.style.display = (sceneIndex === 2) ? 'block' : 'none';
+
+            // Evitar transiciones innecesarias
+            if (mainStage.style.transform === `translateX(-${sceneIndex * 100}vw)` && audioActivated) {
+                return;
+            }
+
+            stopCurrentAudio();
+            currentAudio = newAudio;
+            currentText = newText;
+            
+            if (sceneIndex === 2) {
+                openedAppTitle.textContent = newAppTitle || "Aplicación Abierta";
+                openWindowLottie.play(); 
+            } else {
+                openWindowLottie.pause();
+            }
+
+            mainStage.style.transform = `translateX(-${sceneIndex * 100}vw)`;
+            inicioTab.classList.remove('active');
+            aplicacionesTab.classList.remove('active');
+            
+            // Bloquear tabs durante el audio si la guía está activa
+            if (audioActivated) {
+                aplicacionesTab.classList.add('disabled');
+                inicioTab.classList.add('disabled');
             }
             
-            // Función para detener y restablecer el audio al cambiar de escena
-            function stopCurrentAudio() {
-                if (currentAudio) {
-                    currentAudio.pause();
-                    currentAudio.currentTime = 0;
+            // Activar la pestaña correcta
+            if (sceneIndex === 0) {
+                inicioTab.classList.add('active');
+            } else if (sceneIndex === 1) {
+                aplicacionesTab.classList.add('active');
+            }
+            
+            // Iniciar la reproducción si el audio está activo
+            if (audioActivated) {
+                currentAudio.play().then(() => {
+                    teacherLottie.play();
+                    const audioDuration = currentAudio.duration * 1000; 
+                    typeWriterEffect(currentText, audioDuration);
+                }).catch(error => {
+                    console.error("Error al reproducir el audio de la escena:", error);
+                    typeWriterEffect(currentText, 6000); 
+                });
+            } else {
+                typeWriterEffect(currentText, 6000);
+            }
+            
+            // LÓGICA DE FINALIZACIÓN DE AUDIO
+            currentAudio.onended = () => {
+                console.log(`Audio de escena ${sceneIndex} terminado.`);
+                
+                if (sceneIndex < 2) {
+                    // Audio de INICIO (0) o APLICACIONES (1)
+                    aplicacionesTab.classList.remove('disabled'); 
+                    inicioTab.classList.remove('disabled'); 
+                    
+                    // *** PUNTO CLAVE 1: Habilitar el engranaje al terminar el audio de la Pág. 1 ***
+                    if (sceneIndex === 1) {
+                        settingsMenuEnabled = true;
+                    }
+
+                } else {
+                    // Lógica de RETORNO de APP (Escena 2)
+                    console.log("Regresando a Aplicaciones (Escena 1) y RE-iniciando audio.");
+                    
+                    // Llamar a goToScene(1) para REPETIR el audio de la página 1
+                    goToScene(1, TEXT_APLICACIONES, audioAplicaciones);
+                    
+                    // Limpieza de la escena 2
+                    openWindowLottie.pause();
+                    return; // Evita el código posterior para no detener el lottie antes de tiempo
                 }
+                
+                teacherLottie.pause();
+            };
+        }
+
+        // Transición a la escena de apertura de aplicación (Index 2)
+        function goToAppOpenScene(appName) {
+            // Deshabilitar el menú de ajustes al entrar a la App (Pág. 2)
+            settingsMenuEnabled = false;
+            settingsMenu.classList.remove('active');
+            logoutButton.classList.add('locked'); // Asegurar que Cerrar Sesión esté bloqueado
+            
+            aplicacionesTab.classList.add('disabled');
+            inicioTab.classList.add('disabled');
+            
+            goToScene(2, TEXT_APP_OPEN_GUIDE, audioAppOpen, appName);
+        }
+        
+        // FUNCIÓN NUEVA: Manejar el clic en el ícono de Ajustes
+        function handleSettingsClick() {
+            // Mostrar/Ocultar el menú de ajustes si la guía no está activa
+            if (!audioActivated) {
+                settingsMenu.classList.toggle('active');
+                return;
             }
 
-            // Función de Transición del Carrusel (MODIFICADO para gestionar el audio y su duración)
-            function goToScene(sceneIndex, newText, newAudio) {
-                // 1. Detener audio anterior y preparar el nuevo
+            if (settingsMenuEnabled) {
+                // El menú está habilitado: Iniciar el flujo del audio de recuerdo
+                
+                // 1. Mostrar el menú
+                settingsMenu.classList.add('active'); 
+                
+                // 2. Bloquear la navegación y el re-clic en el engranaje durante la guía
+                aplicacionesTab.classList.add('disabled');
+                inicioTab.classList.add('disabled');
+                settingsIcon.style.pointerEvents = 'none'; 
+
+                // 3. Reproducir el audio de recuerdo (page6_recuerda.mp3)
                 stopCurrentAudio();
-                currentAudio = newAudio;
-                currentText = newText;
+                currentAudio = audioPage6Recuerda;
+                currentText = TEXT_AJUSTES_RECUERDA;
 
-                // 2. Mueve el carrusel y actualiza el NavBar
-                mainStage.style.transform = `translateX(-${sceneIndex * 100}vw)`;
-                inicioTab.classList.remove('active');
-                aplicacionesTab.classList.remove('active');
-                if (sceneIndex === 0) {
-                    inicioTab.classList.add('active');
-                } else {
-                    aplicacionesTab.classList.add('active');
-                }
-                
-                // 3. Reproducir el nuevo audio y sincronizar el Typewriter
-                if (audioActivated) {
-                    // Deshabilitar tabs para forzar la atención en la guía
-                    aplicacionesTab.classList.add('disabled');
-                    inicioTab.classList.add('disabled');
+                currentAudio.play().then(() => {
+                    teacherLottie.play();
+                    const audioDuration = currentAudio.duration * 1000; 
+                    typeWriterEffect(currentText, audioDuration);
+                }).catch(error => {
+                    console.error("Error al reproducir el audio de recuerdo:", error);
+                });
 
-                    currentAudio.play().then(() => {
-                        lottiePlayer.play();
-                        // Usar la duración real del nuevo audio para la sincronización
-                        const audioDuration = currentAudio.duration * 1000; 
-                        typeWriterEffect(currentText, audioDuration);
-                    }).catch(error => {
-                        console.error("Error al reproducir el audio de la escena:", error);
-                        // Si falla el audio, usar una duración fija para el texto
-                        typeWriterEffect(currentText, 6000); 
-                    });
-                }
-                
-                // 4. Lógica de re-habilitación (al terminar el audio actual)
+                // 4. *** PUNTO CLAVE 2: Desbloquear CERRAR SESIÓN al finalizar el audio de recuerdo ***
                 currentAudio.onended = () => {
-                    console.log(`Audio de escena ${sceneIndex} terminado. Habilitando tabs.`);
+                    console.log("Audio de recuerdo terminado. Habilitando 'Cerrar Sesión'.");
+                    
+                    // Desbloquear el botón de CERRAR SESIÓN
+                    logoutButton.classList.remove('locked');
+                    
+                    // Re-habilitar la navegación (excepto el engranaje si queremos que el usuario haga solo el logout)
                     aplicacionesTab.classList.remove('disabled');
                     inicioTab.classList.remove('disabled');
-                    lottiePlayer.pause();
+                    settingsIcon.style.pointerEvents = 'auto'; 
+                    teacherLottie.pause();
+                    
+                    // Desactivamos el "Recuerda" si el usuario vuelve a hacer clic
+                    settingsMenuEnabled = false;
                 };
+                
+            } else {
+                // Si la guía está activa pero el engranaje aún no ha sido habilitado por el audio de Pág 1.
+                console.log("El engranaje está bloqueado. Esperando instrucción de la guía.");
             }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicialización de las referencias DOM
+            audioInicio = document.getElementById('audio-inicio');
+            audioAplicaciones = document.getElementById('audio-aplicaciones');
+            audioAppOpen = document.getElementById('audio-app-open');
+            audioPage6Recuerda = document.getElementById('audio-page6-recuerda'); // Referencia al nuevo audio
             
-            // Inicia la interacción (Lógica original, ahora usa audioInicio)
+            audioButton = document.getElementById('activate-audio');
+            inicioTab = document.getElementById('inicio-tab'); 
+            aplicacionesTab = document.getElementById('aplicaciones-tab');
+            mainStage = document.getElementById('main-stage'); 
+            teacherLottie = document.getElementById('teacher-lottie');
+            openWindowLottie = document.getElementById('open-window-lottie');
+            textElement = document.getElementById('typewriter-text');
+            bubbleContainer = document.getElementById('info-bubble-container');
+            openedAppTitle = document.getElementById('opened-app-title');
+            
+            // Referencias a elementos del menú de Ajustes
+            settingsIcon = document.getElementById('settings-icon');
+            settingsMenu = document.getElementById('settings-menu');
+            logoutButton = document.getElementById('logout-button');
+
+            // Inicializar
+            currentAudio = audioInicio; 
+            currentText = TEXT_INICIO;
+            generateAppCards(); 
+            openWindowLottie.style.display = 'none';
+            
+            // Asegurarse de que 'Cerrar Sesión' inicie bloqueado
+            logoutButton.classList.add('locked');
+
+
+            // --- Event Listeners ---
+
+            // 1. Activar Audio Guía
             audioButton.addEventListener('click', () => {
                 if (!audioActivated) {
-                    currentAudio = audioInicio; // Asegura que inicie con el audio 1
+                    currentAudio = audioInicio; 
+                    currentText = TEXT_INICIO; 
+                    
                     currentAudio.play().then(() => {
                         bubbleContainer.classList.add('visible');
-                        lottiePlayer.play();
-
+                        teacherLottie.play();
                         const audioDuration = currentAudio.duration * 1000;
                         typeWriterEffect(currentText, audioDuration);
 
-                        audioButton.textContent = 'Audio Guía Activo...';
-                        audioButton.disabled = true;
-                        audioActivated = true;
+                        audioButton.innerHTML = '<i class="fas fa-volume-up"></i> <span>Audio Guía Activo</span>';
+                        audioButton.disabled = true; 
+                        audioActivated = true; 
+
+                        aplicacionesTab.classList.add('disabled');
+                        inicioTab.classList.add('disabled');
                     }).catch(error => {
                         console.error("Error al reproducir el audio automáticamente:", error);
                         alert("Por favor, active la reproducción automática para continuar la guía.");
@@ -561,34 +731,52 @@
                 }
             });
 
-            // Condición de Finalización: Detener todo al terminar el audio de INICIO
+            // 2. Finalización del Audio de INICIO (habilitación inicial de Aplicaciones)
             audioInicio.onended = () => {
                 console.log("Audio de Inicio terminado. Habilitando pestaña 'Aplicaciones'.");
-                aplicacionesTab.classList.remove('disabled');
-                // Mantener el botón de audio deshabilitado hasta que se haga clic en aplicaciones
-                // audioButton.textContent = 'Audio Finalizado'; 
-                lottiePlayer.pause(); 
+                aplicacionesTab.classList.remove('disabled'); 
+                inicioTab.classList.remove('disabled'); 
+                teacherLottie.pause(); 
             };
 
-            // Lógica de navegación a APLICACIONES (Usa goToScene)
+            // 3. Navegación a APLICACIONES (Pág 1)
             aplicacionesTab.addEventListener('click', (e) => {
                 e.preventDefault(); 
-                if (!aplicacionesTab.classList.contains('disabled')) {
-                    // Transición a la escena 1: Aplicaciones. Usa el nuevo audio.
-                    goToScene(1, TEXT_APLICACIONES, audioAplicaciones); 
-                }
+                // Resetear estados al navegar manualmente
+                settingsMenu.classList.remove('active');
+                logoutButton.classList.add('locked');
+                settingsMenuEnabled = false;
+
+                goToScene(1, TEXT_APLICACIONES, audioAplicaciones); 
             });
             
-            // Lógica para volver a INICIO (Usa goToScene)
+            // 4. Navegación a INICIO (Pág 0)
             inicioTab.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (!inicioTab.classList.contains('disabled')) {
-                    // Transición a la escena 0: Inicio. Vuelve al audio original.
-                    goToScene(0, TEXT_INICIO, audioInicio); 
-                }
+                // Resetear estados al navegar manualmente
+                settingsMenu.classList.remove('active');
+                logoutButton.classList.add('locked');
+                settingsMenuEnabled = false;
+
+                goToScene(0, TEXT_INICIO, audioInicio); 
             });
 
+            // 5. Clic en el Ícono de AJUSTES (Engranaje)
+            settingsIcon.addEventListener('click', handleSettingsClick);
+
+            // 6. Clic en CERRAR SESIÓN
+            logoutButton.addEventListener('click', (e) => {
+                // Verificar si el botón está bloqueado (clase 'locked') antes de navegar
+                if (audioActivated && !logoutButton.classList.contains('locked')) {
+                    // Navegación real a page_7.html
+                    window.location.href = 'page_1_temp2.html'; 
+                } else {
+                    e.preventDefault();
+                    console.log("Acción de Cerrar Sesión bloqueada por la guía. Debe reproducirse el audio de recuerdo.");
+                }
+            });
         });
     </script>
+    <!--*****************-->
 </body>
 </html>
